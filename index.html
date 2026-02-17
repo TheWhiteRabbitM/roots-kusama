@@ -1,0 +1,1325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ROOTS — From Proof of Family to Proof of Personhood</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Cinzel:wght@400;600;700&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --soil:       #1C1008;
+  --terracotta: #9B4A1F;
+  --amber:      #C9812A;
+  --wheat:      #E8C97A;
+  --parchment:  #F4EDD8;
+  --sage:       #6B7C5A;
+  --stone:      #8B7355;
+  --cream:      #FAF5E9;
+  --dark:       #120C05;
+}
+
+html, body {
+  width: 100%; height: 100%;
+  overflow: hidden;
+  background: var(--dark);
+  font-family: 'Cormorant Garamond', serif;
+  color: var(--parchment);
+}
+
+/* ── THREE.JS CANVAS ── */
+#bg-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ── GRAIN OVERLAY ── */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.07'/%3E%3C/svg%3E");
+  opacity: 0.35;
+}
+
+/* ── SLIDES CONTAINER ── */
+#slides {
+  position: relative;
+  z-index: 10;
+  width: 100%; height: 100%;
+}
+
+.slide {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.8s ease;
+}
+
+.slide.active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* ── SLIDE INNER LAYOUTS ── */
+.slide-inner {
+  width: 90%;
+  max-width: 1100px;
+  height: 85vh;
+  max-height: 660px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* ── COVER SLIDE ── */
+#slide-0 .cover-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  height: 100%;
+  align-items: center;
+}
+
+.cover-left { padding-right: 60px; }
+
+.eyebrow {
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  letter-spacing: 4px;
+  color: var(--amber);
+  text-transform: uppercase;
+  margin-bottom: 24px;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.3s forwards;
+}
+
+.cover-from {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  font-size: 18px;
+  color: var(--stone);
+  margin-bottom: 4px;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.5s forwards;
+}
+
+.cover-title {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(60px, 8vw, 96px);
+  font-weight: 700;
+  color: var(--wheat);
+  line-height: 0.9;
+  letter-spacing: -2px;
+  margin-bottom: 4px;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.6s forwards;
+}
+
+.cover-to {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  font-size: 18px;
+  color: var(--stone);
+  margin-bottom: 32px;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.8s forwards;
+}
+
+.cover-tagline {
+  font-size: 16px;
+  font-weight: 300;
+  color: rgba(244,237,216,0.7);
+  line-height: 1.7;
+  max-width: 400px;
+  margin-bottom: 48px;
+  opacity: 0;
+  animation: fadeUp 0.8s 1.0s forwards;
+}
+
+.cover-tagline em { color: var(--amber); font-style: italic; }
+
+.cover-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  opacity: 0;
+  animation: fadeUp 0.8s 1.2s forwards;
+}
+
+.meta-row {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.meta-key {
+  font-family: 'Cinzel', serif;
+  font-size: 8px;
+  letter-spacing: 3px;
+  color: var(--amber);
+  text-transform: uppercase;
+  min-width: 70px;
+}
+
+.meta-val {
+  font-size: 13px;
+  color: rgba(244,237,216,0.75);
+}
+.meta-val strong { color: var(--parchment); font-weight: 600; }
+
+/* Cover right — token medallion */
+.cover-right {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  animation: fadeIn 1.2s 1.0s forwards;
+}
+
+.token-ring {
+  width: 280px;
+  height: 280px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(201,129,42,0.5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.token-ring::before {
+  content: '';
+  position: absolute;
+  inset: 12px;
+  border-radius: 50%;
+  border: 1px solid rgba(201,129,42,0.2);
+}
+
+.token-ring::after {
+  content: '';
+  position: absolute;
+  inset: 24px;
+  border-radius: 50%;
+  border: 1px solid rgba(201,129,42,0.1);
+}
+
+.token-name {
+  font-family: 'Cinzel', serif;
+  font-size: 52px;
+  font-weight: 700;
+  color: var(--wheat);
+  letter-spacing: 4px;
+}
+
+.token-sub {
+  font-family: 'Cinzel', serif;
+  font-size: 9px;
+  letter-spacing: 4px;
+  color: var(--amber);
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+
+.token-disclaimer {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  font-size: 10px;
+  color: rgba(201,129,42,0.6);
+  margin-top: 12px;
+  text-align: center;
+  max-width: 140px;
+  line-height: 1.5;
+}
+
+/* ── CONTENT SLIDES ── */
+.slide-header {
+  margin-bottom: 32px;
+}
+
+.slide-number {
+  font-family: 'Cinzel', serif;
+  font-size: 9px;
+  letter-spacing: 4px;
+  color: var(--amber);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.slide-title {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(28px, 3.5vw, 44px);
+  font-weight: 600;
+  color: var(--wheat);
+  line-height: 1.1;
+}
+
+.slide-title em {
+  font-style: italic;
+  font-family: 'IM Fell English', serif;
+  color: var(--terracotta);
+}
+
+.slide-body {
+  display: grid;
+  gap: 20px;
+}
+
+/* Two column layout */
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  align-items: start;
+}
+
+/* Three column layout */
+.three-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 24px;
+}
+
+/* Card */
+.card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(201,129,42,0.15);
+  padding: 24px;
+  position: relative;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 3px; height: 100%;
+  background: var(--terracotta);
+}
+
+.card-label {
+  font-family: 'Cinzel', serif;
+  font-size: 8px;
+  letter-spacing: 3px;
+  color: var(--amber);
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.card-title {
+  font-family: 'Cinzel', serif;
+  font-size: 16px;
+  color: var(--wheat);
+  margin-bottom: 10px;
+}
+
+.card-text {
+  font-size: 14px;
+  font-weight: 300;
+  color: rgba(244,237,216,0.7);
+  line-height: 1.65;
+}
+
+/* Big stat */
+.stat-block {
+  text-align: center;
+  padding: 20px;
+}
+
+.stat-number {
+  font-family: 'Cinzel', serif;
+  font-size: 56px;
+  font-weight: 700;
+  color: var(--amber);
+  line-height: 1;
+  display: block;
+}
+
+.stat-label {
+  font-size: 12px;
+  color: rgba(244,237,216,0.6);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-family: 'Cinzel', serif;
+  margin-top: 6px;
+  display: block;
+}
+
+.stat-sub {
+  font-size: 13px;
+  color: rgba(244,237,216,0.5);
+  margin-top: 4px;
+}
+
+/* Body paragraph */
+.body-para {
+  font-size: 15px;
+  font-weight: 300;
+  color: rgba(244,237,216,0.78);
+  line-height: 1.75;
+  max-width: 700px;
+}
+
+.body-para em { color: var(--amber); font-style: italic; }
+
+/* Highlight box */
+.highlight-box {
+  background: rgba(201,129,42,0.08);
+  border: 1px solid rgba(201,129,42,0.3);
+  padding: 20px 28px;
+  font-size: 15px;
+  font-style: italic;
+  color: rgba(244,237,216,0.85);
+  line-height: 1.7;
+  font-family: 'IM Fell English', serif;
+}
+
+/* Phase steps */
+.phase-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  padding: 14px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.phase-row:last-child { border-bottom: none; }
+
+.phase-num {
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: var(--amber);
+  min-width: 24px;
+  padding-top: 2px;
+}
+
+.phase-content { flex: 1; }
+
+.phase-title {
+  font-family: 'Cinzel', serif;
+  font-size: 14px;
+  color: var(--wheat);
+  margin-bottom: 3px;
+}
+
+.phase-desc {
+  font-size: 13px;
+  font-weight: 300;
+  color: rgba(244,237,216,0.6);
+  line-height: 1.5;
+}
+
+.phase-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--terracotta);
+  margin-top: 5px;
+  flex-shrink: 0;
+}
+
+/* Budget table */
+.budget-table { width: 100%; border-collapse: collapse; }
+
+.budget-table th {
+  font-family: 'Cinzel', serif;
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--amber);
+  text-align: left;
+  padding: 8px 12px;
+  border-bottom: 1px solid rgba(201,129,42,0.3);
+}
+
+.budget-table td {
+  font-size: 13px;
+  color: rgba(244,237,216,0.75);
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  vertical-align: middle;
+}
+
+.budget-table tr:last-child td {
+  border-bottom: none;
+  color: var(--wheat);
+  font-weight: 600;
+  border-top: 1px solid rgba(201,129,42,0.3);
+  padding-top: 14px;
+}
+
+.budget-table td:last-child, .budget-table th:last-child { text-align: right; }
+
+.dot-tag {
+  display: inline-block;
+  background: rgba(201,129,42,0.15);
+  color: var(--amber);
+  font-family: 'Cinzel', serif;
+  font-size: 9px;
+  letter-spacing: 2px;
+  padding: 3px 8px;
+  margin-left: 8px;
+}
+
+/* Divider ornament */
+.ornament {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 16px 0;
+}
+.ornament .line { flex: 1; height: 1px; background: rgba(201,129,42,0.2); }
+.ornament .diamond { width: 5px; height: 5px; background: var(--amber); transform: rotate(45deg); flex-shrink: 0; }
+
+/* ── NAV ── */
+#nav {
+  position: fixed;
+  bottom: 36px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.nav-btn {
+  background: none;
+  border: 1px solid rgba(201,129,42,0.4);
+  color: var(--amber);
+  font-family: 'Cinzel', serif;
+  font-size: 9px;
+  letter-spacing: 3px;
+  padding: 10px 24px;
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: all 0.3s;
+}
+
+.nav-btn:hover {
+  background: rgba(201,129,42,0.1);
+  border-color: var(--amber);
+}
+
+#slide-counter {
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: rgba(201,129,42,0.5);
+  min-width: 60px;
+  text-align: center;
+}
+
+/* ── DOTS NAV ── */
+#dots {
+  position: fixed;
+  right: 36px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: rgba(201,129,42,0.2);
+  cursor: pointer;
+  transition: all 0.3s;
+  border: 1px solid rgba(201,129,42,0.3);
+}
+
+.dot.active {
+  background: var(--amber);
+  border-color: var(--amber);
+}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* Pulse ring on token */
+@keyframes pulse-ring {
+  0%   { transform: scale(1);   opacity: 0.5; }
+  50%  { transform: scale(1.05); opacity: 0.2; }
+  100% { transform: scale(1);   opacity: 0.5; }
+}
+
+.token-ring { animation: pulse-ring 4s ease-in-out infinite; }
+
+/* ── KUSAMA BADGE ── */
+.kusama-badge {
+  position: fixed;
+  top: 28px;
+  right: 36px;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.k-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--amber); }
+
+.k-text {
+  font-family: 'Cinzel', serif;
+  font-size: 8px;
+  letter-spacing: 3px;
+  color: rgba(201,129,42,0.6);
+  text-transform: uppercase;
+}
+
+/* slide-in content animation for non-cover slides */
+.slide.active .slide-inner {
+  animation: fadeUp 0.6s 0.1s both;
+}
+
+/* ROOTS icon in slides */
+.roots-icon {
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  letter-spacing: 3px;
+  color: var(--amber);
+  border: 1px solid rgba(201,129,42,0.4);
+  display: inline-block;
+  padding: 4px 10px;
+  margin-bottom: 16px;
+}
+</style>
+</head>
+<body>
+
+<canvas id="bg-canvas"></canvas>
+
+<!-- KUSAMA BADGE -->
+<div class="kusama-badge">
+  <div class="k-dot"></div>
+  <span class="k-text">Kusama · Art &amp; Social Experiments Bounty</span>
+  <div class="k-dot"></div>
+</div>
+
+<!-- SLIDES -->
+<div id="slides">
+
+  <!-- ══ SLIDE 0 — COVER ══ -->
+  <div class="slide active" id="slide-0">
+    <div class="slide-inner">
+      <div class="cover-layout">
+        <div class="cover-left">
+          <div class="eyebrow">MVP Proposal · Art &amp; Social Experiments · 2025</div>
+          <div class="cover-from">From Proof of Family</div>
+          <div class="cover-title">ROOTS</div>
+          <div class="cover-to">to Proof of Personhood</div>
+          <p class="cover-tagline">
+            A Southern Italian village has verified human identity for four centuries —
+            through oral tradition, family nicknames, and the memory of its elders.<br><br>
+            <em>We are putting it on-chain. And letting it grow.</em>
+          </p>
+          <div class="cover-meta">
+            <div class="meta-row">
+              <span class="meta-key">Network</span>
+              <span class="meta-val"><strong>Kusama</strong> — Art &amp; Social Experiments Bounty</span>
+            </div>
+            <div class="meta-row">
+              <span class="meta-key">Duration</span>
+              <span class="meta-val">3 months · 5 phases</span>
+            </div>
+            <div class="meta-row">
+              <span class="meta-key">Budget</span>
+              <span class="meta-val"><strong>42,000 DOT</strong> · ~$50,000 USD</span>
+            </div>
+            <div class="meta-row">
+              <span class="meta-key">Token</span>
+              <span class="meta-val"><strong>ROOTS</strong> · non-transferable · no monetary value</span>
+            </div>
+          </div>
+        </div>
+        <div class="cover-right">
+          <div class="token-ring">
+            <span class="token-name">ROOTS</span>
+            <span class="token-sub">KSM · 2025</span>
+            <span class="token-disclaimer">non-transferable<br>no monetary value</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 1 — THE PROBLEM ══ -->
+  <div class="slide" id="slide-1">
+    <div class="slide-inner">
+      <div class="slide-header">
+        <div class="slide-number">01 / Problem</div>
+        <h2 class="slide-title">The oldest <em>anti-Sybil</em> system<br>in human history</h2>
+      </div>
+      <div class="two-col">
+        <div>
+          <p class="body-para">
+            As AI blurs the boundary between human and machine, current Proof of Personhood solutions are
+            <em>technically sophisticated but culturally thin</em> — they verify existence without verifying belonging.
+          </p>
+          <div class="ornament"><div class="line"></div><div class="diamond"></div><div class="line"></div></div>
+          <p class="body-para">
+            In small Southern Italian villages, every family carries a <em>'u nomme 'e casa</em> — a house name,
+            passed down orally for centuries. Invisible to official registries. Incomprehensible to outsiders.
+            Impossible for any AI to fake.
+          </p>
+        </div>
+        <div>
+          <div class="card" style="margin-bottom: 16px;">
+            <div class="card-label">Pre-digital identity</div>
+            <div class="card-text">House names are hyper-local, orally transmitted, semantically rich, socially validated — and they <strong style="color:var(--wheat)">grow organically</strong> as families branch over generations.</div>
+          </div>
+          <div class="highlight-box">
+            "You cannot fake belonging to a place if you do not know who the people are and what they are called."
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 2 — THE INSIGHT ══ -->
+  <div class="slide" id="slide-2">
+    <div class="slide-inner">
+      <div class="slide-header">
+        <div class="slide-number">02 / Core Insight</div>
+        <h2 class="slide-title">A living social graph<br><em>rooted</em> in oral tradition</h2>
+      </div>
+      <div class="three-col">
+        <div class="card">
+          <div class="card-label">Anti-Sybil</div>
+          <div class="card-title">By Design</div>
+          <div class="card-text">House names are the original distributed identity system. Community-validated, append-only, tamper-resistant. A proto-blockchain that predates the internet by 400 years.</div>
+        </div>
+        <div class="card">
+          <div class="card-label">Living Graph</div>
+          <div class="card-title">Always Growing</div>
+          <div class="card-text">When a family branch forms, a new nickname is born. Each new name creates a new node: <strong style="color:var(--wheat)">roots_parent_token_id</strong> linking to its ancestral ROOTS token.</div>
+        </div>
+        <div class="card">
+          <div class="card-label">The Bridge</div>
+          <div class="card-title">Off → On Chain</div>
+          <div class="card-text">We encode centuries of oral trust onto Kusama — preserving the living, evolving nature of the graph. The community maintains it simply by living.</div>
+        </div>
+      </div>
+      <div class="highlight-box" style="margin-top: 20px;">
+        The ROOTS token is not a financial instrument. It is the on-chain equivalent of a community certificate — <em>proof that a specific person belongs here, attested by their peers.</em>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 3 — ARCHITECTURE ══ -->
+  <div class="slide" id="slide-3">
+    <div class="slide-inner">
+      <div class="slide-header">
+        <div class="slide-number">03 / Architecture</div>
+        <h2 class="slide-title">Two layers, one truth</h2>
+      </div>
+      <div class="two-col">
+        <div>
+          <div class="card-label" style="margin-bottom:12px;">Off-Chain Layer</div>
+          <div class="phase-row">
+            <div class="phase-dot"></div>
+            <div class="phase-content">
+              <div class="phase-title">Oral Collection Sessions</div>
+              <div class="phase-desc">Informal gatherings at bars, homes, piazzas. Document 60+ house names with etymology, family attribution, village quarter, lineage.</div>
+            </div>
+          </div>
+          <div class="phase-row">
+            <div class="phase-dot"></div>
+            <div class="phase-content">
+              <div class="phase-title">The Book of Names</div>
+              <div class="phase-desc">A printed archive — 30–50 pages, deposited with the municipality. Cultural artifact with standalone value.</div>
+            </div>
+          </div>
+          <div class="phase-row">
+            <div class="phase-dot"></div>
+            <div class="phase-content">
+              <div class="phase-title">The Lineage Graph</div>
+              <div class="phase-desc">Visual and digital DAG of how names branch over time. The conceptual model for the on-chain structure.</div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="card-label" style="margin-bottom:12px;">On-Chain Layer — Kusama</div>
+          <div class="phase-row">
+            <div class="phase-dot" style="background:var(--amber)"></div>
+            <div class="phase-content">
+              <div class="phase-title">Kusama Identity Pallet</div>
+              <div class="phase-desc">house_name · village_quarter · attestation_hash · lineage_parent — no custom smart contract needed.</div>
+            </div>
+          </div>
+          <div class="phase-row">
+            <div class="phase-dot" style="background:var(--amber)"></div>
+            <div class="phase-content">
+              <div class="phase-title">ROOTS Token (Soulbound)</div>
+              <div class="phase-desc">Native assets pallet, transfer: None at protocol level. Metadata on IPFS, hash anchored on-chain. roots_parent_token_id creates the DAG.</div>
+            </div>
+          </div>
+          <div class="phase-row">
+            <div class="phase-dot" style="background:var(--amber)"></div>
+            <div class="phase-content">
+              <div class="phase-title">OpenGov Referendum</div>
+              <div class="phase-desc">Gated vote: only attested identities participate. Real community question, result presented to municipality.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 4 — PHASES ══ -->
+  <div class="slide" id="slide-4">
+    <div class="slide-inner">
+      <div class="slide-header">
+        <div class="slide-number">04 / Roadmap</div>
+        <h2 class="slide-title">5 phases · 3 months</h2>
+      </div>
+      <div class="slide-body">
+        <div class="phase-row">
+          <div class="phase-num">01</div>
+          <div class="phase-content">
+            <div class="phase-title">Oral Ethnography &amp; Book of Names <span class="dot-tag">4 WKS · OFF-CHAIN</span></div>
+            <div class="phase-desc">Collection sessions · lineage graph · 100-copy printed archive · video documentation</div>
+          </div>
+          <div style="font-family:'Cinzel',serif;font-size:13px;color:var(--amber);white-space:nowrap;">6,500 DOT</div>
+        </div>
+        <div class="phase-row">
+          <div class="phase-num">02</div>
+          <div class="phase-content">
+            <div class="phase-title">The Attestation Ceremony <span class="dot-tag">2 WKS · BRIDGE</span></div>
+            <div class="phase-desc">Public event · elder panel · attestation certificates · 20-min documentary</div>
+          </div>
+          <div style="font-family:'Cinzel',serif;font-size:13px;color:var(--amber);white-space:nowrap;">8,500 DOT</div>
+        </div>
+        <div class="phase-row">
+          <div class="phase-num">03</div>
+          <div class="phase-content">
+            <div class="phase-title">On-Chain Registration <span class="dot-tag">2 WKS · ON-CHAIN</span></div>
+            <div class="phase-desc">Wallet onboarding · ROOTS minting · IPFS pipeline · identity pallet registration for 100+ participants</div>
+          </div>
+          <div style="font-family:'Cinzel',serif;font-size:13px;color:var(--amber);white-space:nowrap;">6,500 DOT</div>
+        </div>
+        <div class="phase-row">
+          <div class="phase-num">04</div>
+          <div class="phase-content">
+            <div class="phase-title">The Social Experiment <span class="dot-tag">4 WKS · HYBRID</span></div>
+            <div class="phase-desc">OpenGov referendum · facilitated village deliberation · data collection · analysis</div>
+          </div>
+          <div style="font-family:'Cinzel',serif;font-size:13px;color:var(--amber);white-space:nowrap;">7,500 DOT</div>
+        </div>
+        <div class="phase-row">
+          <div class="phase-num">05</div>
+          <div class="phase-content">
+            <div class="phase-title">Report &amp; Replication Framework <span class="dot-tag">2 WKS · OFF-CHAIN</span></div>
+            <div class="phase-desc">30-page academic report · Mirror.xyz · facilitator handbook for other villages</div>
+          </div>
+          <div style="font-family:'Cinzel',serif;font-size:13px;color:var(--amber);white-space:nowrap;">3,333 DOT</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 5 — BUDGET ══ -->
+  <div class="slide" id="slide-5">
+    <div class="slide-inner">
+      <div class="slide-header">
+        <div class="slide-number">05 / Budget</div>
+        <h2 class="slide-title">42,000 DOT · ~$50,000 USD</h2>
+      </div>
+      <div class="two-col" style="align-items:start; gap:48px;">
+        <div>
+          <table class="budget-table">
+            <thead>
+              <tr><th>Phase</th><th>DOT</th><th>USD</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Phase 1 — Ethnography</td><td>6,500</td><td>$7,800</td></tr>
+              <tr><td>Phase 2 — Ceremony</td><td>8,500</td><td>$10,200</td></tr>
+              <tr><td>Phase 3 — On-Chain</td><td>6,500</td><td>$7,800</td></tr>
+              <tr><td>Phase 4 — Experiment</td><td>7,500</td><td>$9,000</td></tr>
+              <tr><td>Phase 5 — Report</td><td>3,333</td><td>$4,000</td></tr>
+              <tr><td>Contingency Buffer</td><td>1,260</td><td>$1,512</td></tr>
+              <tr><td>Tax &amp; Legal (IT 26%)</td><td>8,407</td><td>$10,088</td></tr>
+              <tr><td><strong>TOTAL</strong></td><td><strong>42,000</strong></td><td><strong>~$50,400</strong></td></tr>
+            </tbody>
+          </table>
+          <p style="font-size:11px;color:rgba(244,237,216,0.4);margin-top:10px;font-style:italic;">Rate: $1.20 / DOT · Feb 2025. Italian crypto capital gains tax 26% included.</p>
+        </div>
+        <div>
+          <div class="stat-block">
+            <span class="stat-number">100+</span>
+            <span class="stat-label">Participants attested</span>
+          </div>
+          <div class="stat-block">
+            <span class="stat-number">3</span>
+            <span class="stat-label">Months to deliver</span>
+          </div>
+          <div class="stat-block">
+            <span class="stat-number">∞</span>
+            <span class="stat-label">New nodes possible</span>
+            <span class="stat-sub">the graph grows forever</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 6 — WHY KUSAMA ══ -->
+  <div class="slide" id="slide-6">
+    <div class="slide-inner">
+      <div class="slide-header">
+        <div class="slide-number">06 / Why Kusama</div>
+        <h2 class="slide-title">The most unlikely<br><em>Kusama users</em> imaginable</h2>
+      </div>
+      <div class="two-col">
+        <div>
+          <p class="body-para" style="margin-bottom:20px;">
+            This experiment belongs on Kusama specifically. The Identity Pallet, OpenGov, and native asset minting
+            already exist — we are not building new tooling. We are proving that Kusama's primitives work
+            for a context their designers <em>never imagined.</em>
+          </p>
+          <div class="highlight-box">
+            If Kusama's identity infrastructure works for elderly residents of a 500-person village in Southern Italy,
+            it can work for anyone.
+          </div>
+        </div>
+        <div>
+          <div class="card" style="margin-bottom: 16px;">
+            <div class="card-label">Scalability</div>
+            <div class="card-text">The replication framework produced in Phase 5 enables any village in Italy, Greece, Spain, Portugal, or the Balkans to run this experiment. The facilitator handbook is the product.</div>
+          </div>
+          <div class="card">
+            <div class="card-label">Core Thesis</div>
+            <div class="card-text" style="font-family:'IM Fell English',serif;font-style:italic;font-size:15px;color:var(--wheat);">
+              "The oldest anti-Sybil mechanism in human history is a village that knows its own names.
+              We are putting it on-chain — and letting it grow."
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ══ SLIDE 7 — NFT ══ -->
+  <div class="slide" id="slide-7">
+    <div class="slide-inner">
+      <div class="slide-header">
+        <div class="slide-number">07 / ROOTS NFT</div>
+        <h2 class="slide-title">A living portrait<br>of your <em>place</em> in the graph</h2>
+      </div>
+      <div class="two-col">
+        <div>
+          <p class="body-para" style="margin-bottom:20px;">
+            Every attested family receives a <em>generative NFT</em> — a unique visual artwork
+            procedurally rendered from the family's position in the lineage graph.
+            No two are the same. And each one <em>evolves over time.</em>
+          </p>
+          <div class="phase-row">
+            <div class="phase-dot" style="background:var(--amber)"></div>
+            <div class="phase-content">
+              <div class="phase-title">Trunk width</div>
+              <div class="phase-desc">Proportional to lineage depth — ancient families grow wider, more imposing.</div>
+            </div>
+          </div>
+          <div class="phase-row">
+            <div class="phase-dot" style="background:var(--amber)"></div>
+            <div class="phase-content">
+              <div class="phase-title">Branch count</div>
+              <div class="phase-desc">Equals the number of living child tokens. When a new house name is born, the parent NFT grows a new branch.</div>
+            </div>
+          </div>
+          <div class="phase-row">
+            <div class="phase-dot" style="background:var(--amber)"></div>
+            <div class="phase-content">
+              <div class="phase-title">Leaf density &amp; color</div>
+              <div class="phase-desc">Grows with reputation score. Shifts from terracotta (new family) to deep amber (ancient lineage).</div>
+            </div>
+          </div>
+          <div class="phase-row">
+            <div class="phase-dot" style="background:var(--amber)"></div>
+            <div class="phase-content">
+              <div class="phase-title">Animation speed</div>
+              <div class="phase-desc">Slower, more majestic for high-reputation families. The tree breathes at the rhythm of its history.</div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="highlight-box" style="margin-bottom:20px;">
+            The NFT is alive. When a child token is minted with this token as <code style="font-family:monospace;font-size:13px;color:var(--amber)">roots_parent_token_id</code>, the artwork re-renders with a new branch. The NFT grows.
+          </div>
+          <div class="card">
+            <div class="card-label">Important Disclaimer</div>
+            <div class="card-text">ROOTS NFTs have <strong style="color:var(--wheat)">zero monetary value.</strong> They cannot be traded, sold, or exchanged on any market. They are identity attestation records — the visual representation of a family's place in the community graph. Nothing more.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 8 — REPUTATION ══ -->
+  <div class="slide" id="slide-8">
+    <div class="slide-inner">
+      <div class="slide-header">
+        <div class="slide-number">08 / Reputation</div>
+        <h2 class="slide-title">Trust that is <em>earned</em>,<br>never bought</h2>
+      </div>
+      <div class="two-col" style="align-items:start;">
+        <div>
+          <p class="body-para" style="margin-bottom:20px;">
+            ROOTS Reputation is an on-chain score accumulated through verifiable community actions.
+            It cannot be transferred, purchased, or delegated. It mirrors how trust actually works in the village.
+          </p>
+          <div class="phase-row">
+            <div class="phase-num">+50</div>
+            <div class="phase-content">
+              <div class="phase-title">Attending the attestation ceremony</div>
+            </div>
+          </div>
+          <div class="phase-row">
+            <div class="phase-num">+30</div>
+            <div class="phase-content">
+              <div class="phase-title">Witnessing a new community member</div>
+            </div>
+          </div>
+          <div class="phase-row">
+            <div class="phase-num">+20</div>
+            <div class="phase-content">
+              <div class="phase-title">Participating in an OpenGov referendum</div>
+            </div>
+          </div>
+          <div class="phase-row">
+            <div class="phase-num">+40</div>
+            <div class="phase-content">
+              <div class="phase-title">Spawning a new family branch</div>
+            </div>
+          </div>
+          <div class="phase-row">
+            <div class="phase-num">+10</div>
+            <div class="phase-content">
+              <div class="phase-title">Per year of continuous on-chain presence</div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="card" style="margin-bottom:16px;">
+            <div class="card-label">Vote Weighting</div>
+            <div class="card-title">Logarithmic fairness</div>
+            <div class="card-text">
+              In the OpenGov experiment, votes are weighted:<br><br>
+              <code style="font-family:monospace;font-size:13px;color:var(--amber);display:block;margin:8px 0;">
+                weight = 1 + log₂(reputation / 50)
+              </code>
+              Elder families with deep roots carry more weight — mirroring the actual social dynamics of the village — without silencing newer voices.
+            </div>
+          </div>
+          <div class="highlight-box">
+            Reputation is the on-chain crystallization of something the village already knows: some families have been here longer, witnessed more, and carry more social trust. We are not inventing this hierarchy — we are making it legible.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 9 — CLOSING ══ -->
+  <div class="slide" id="slide-9">
+    <div class="slide-inner" style="text-align:center;align-items:center;">
+      <div class="roots-icon">ROOTS</div>
+      <h2 style="font-family:'Cinzel',serif;font-size:clamp(32px,5vw,64px);font-weight:700;color:var(--wheat);line-height:1.1;margin-bottom:24px;">
+        You cannot transfer<br>your roots.
+      </h2>
+      <p style="font-family:'IM Fell English',serif;font-style:italic;font-size:18px;color:rgba(244,237,216,0.6);margin-bottom:48px;max-width:560px;">
+        From Proof of Family to Proof of Personhood —<br>
+        a rural social experiment on the Kusama network.
+      </p>
+      <div style="display:flex;gap:48px;justify-content:center;margin-bottom:48px;">
+        <div class="stat-block">
+          <span class="stat-number" style="font-size:36px;">42K</span>
+          <span class="stat-label">DOT requested</span>
+        </div>
+        <div class="stat-block">
+          <span class="stat-number" style="font-size:36px;">3</span>
+          <span class="stat-label">months</span>
+        </div>
+        <div class="stat-block">
+          <span class="stat-number" style="font-size:36px;">5</span>
+          <span class="stat-label">phases</span>
+        </div>
+        <div class="stat-block">
+          <span class="stat-number" style="font-size:36px;">∞</span>
+          <span class="stat-label">villages possible</span>
+        </div>
+      </div>
+      <div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:3px;color:rgba(201,129,42,0.5);">
+        ART &amp; SOCIAL EXPERIMENTS BOUNTY · KUSAMA VISION INITIATIVE · WEB3 FOUNDATION
+      </div>
+    </div>
+  </div>
+
+</div><!-- /slides -->
+
+<!-- DOTS -->
+<div id="dots">
+  <div class="dot active" onclick="goTo(0)"></div>
+  <div class="dot" onclick="goTo(1)"></div>
+  <div class="dot" onclick="goTo(2)"></div>
+  <div class="dot" onclick="goTo(3)"></div>
+  <div class="dot" onclick="goTo(4)"></div>
+  <div class="dot" onclick="goTo(5)"></div>
+  <div class="dot" onclick="goTo(6)"></div>
+  <div class="dot" onclick="goTo(7)"></div>
+  <div class="dot" onclick="goTo(8)"></div>
+  <div class="dot" onclick="goTo(9)"></div>
+</div>
+
+<!-- NAV -->
+<div id="nav">
+  <button class="nav-btn" onclick="prev()">← Prev</button>
+  <span id="slide-counter">1 / 8</span>
+  <button class="nav-btn" onclick="next()">Next →</button>
+</div>
+
+<script>
+// ══════════════════════════════════════════════
+//  THREE.JS ROOTS ANIMATION
+// ══════════════════════════════════════════════
+
+const canvas = document.getElementById('bg-canvas');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setClearColor(0x000000, 0);
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 200);
+camera.position.set(0, 0, 40);
+
+// ── Build root system as tubes ──
+const SOIL_COLOR   = new THREE.Color(0x1C1008);
+const AMBER_COLOR  = new THREE.Color(0xC9812A);
+const TERRA_COLOR  = new THREE.Color(0x9B4A1F);
+const SAGE_COLOR   = new THREE.Color(0x4A5C3A);
+
+function lerp(a, b, t) { return a + (b - a) * t; }
+
+// Recursive branch generator
+function buildBranch(start, direction, length, depth, maxDepth, branches) {
+  if (depth > maxDepth || length < 0.3) return;
+
+  const end = new THREE.Vector3(
+    start.x + direction.x * length,
+    start.y + direction.y * length,
+    start.z + direction.z * length
+  );
+
+  // Add slight curve via midpoint
+  const mid = new THREE.Vector3(
+    lerp(start.x, end.x, 0.5) + (Math.random() - 0.5) * length * 0.4,
+    lerp(start.y, end.y, 0.5) + (Math.random() - 0.5) * length * 0.3,
+    lerp(start.z, end.z, 0.5) + (Math.random() - 0.5) * length * 0.2
+  );
+
+  branches.push({ start: start.clone(), mid: mid.clone(), end: end.clone(), depth });
+
+  // Spawn child branches
+  const numChildren = depth < 2 ? 3 : (depth < 4 ? 2 : 1);
+  for (let i = 0; i < numChildren; i++) {
+    const spread = 0.5 + depth * 0.15;
+    const newDir = new THREE.Vector3(
+      direction.x + (Math.random() - 0.5) * spread,
+      direction.y + (Math.random() - 0.5) * spread * 0.6,
+      direction.z + (Math.random() - 0.5) * spread * 0.5
+    ).normalize();
+
+    buildBranch(end, newDir, length * (0.55 + Math.random() * 0.2), depth + 1, maxDepth, branches);
+  }
+}
+
+// Generate multiple root systems spread across the screen
+const allBranches = [];
+const rootOrigins = [
+  { pos: new THREE.Vector3(-18, 8, 0),  dir: new THREE.Vector3(-0.3, -1, 0.1).normalize() },
+  { pos: new THREE.Vector3(18, 8, 0),   dir: new THREE.Vector3(0.3, -1, -0.1).normalize() },
+  { pos: new THREE.Vector3(0, 12, 0),   dir: new THREE.Vector3(0, -1, 0.05).normalize() },
+  { pos: new THREE.Vector3(-8, 10, 2),  dir: new THREE.Vector3(-0.2, -1, 0.1).normalize() },
+  { pos: new THREE.Vector3(10, 9, -2),  dir: new THREE.Vector3(0.1, -1, -0.1).normalize() },
+];
+
+rootOrigins.forEach(({ pos, dir }) => {
+  buildBranch(pos, dir, 7, 0, 6, allBranches);
+});
+
+// Create line geometry for each branch
+const branchMeshes = [];
+
+allBranches.forEach(({ start, mid, end, depth }) => {
+  const curve = new THREE.QuadraticBezierCurve3(start, mid, end);
+  const points = curve.getPoints(12);
+  const geometry = new THREE.BufferGeometry().setFromPoints(points);
+
+  const t = depth / 6;
+  const color = new THREE.Color().lerpColors(AMBER_COLOR, TERRA_COLOR, t * 0.7);
+  const opacity = Math.max(0.05, 0.6 - t * 0.5);
+
+  const material = new THREE.LineBasicMaterial({
+    color,
+    transparent: true,
+    opacity,
+  });
+
+  const line = new THREE.Line(geometry, material);
+  scene.add(line);
+  branchMeshes.push({ line, baseOpacity: opacity, depth });
+});
+
+// ── Floating particles (spores / pollen) ──
+const particleCount = 120;
+const particleGeo = new THREE.BufferGeometry();
+const positions = new Float32Array(particleCount * 3);
+const particleSpeeds = [];
+
+for (let i = 0; i < particleCount; i++) {
+  positions[i * 3]     = (Math.random() - 0.5) * 80;
+  positions[i * 3 + 1] = (Math.random() - 0.5) * 60;
+  positions[i * 3 + 2] = (Math.random() - 0.5) * 20;
+  particleSpeeds.push({
+    x: (Math.random() - 0.5) * 0.008,
+    y: (Math.random() - 0.5) * 0.006 - 0.002,
+    z: (Math.random() - 0.5) * 0.003,
+  });
+}
+
+particleGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+const particleMat = new THREE.PointsMaterial({
+  color: AMBER_COLOR,
+  size: 0.15,
+  transparent: true,
+  opacity: 0.25,
+  sizeAttenuation: true,
+});
+const particles = new THREE.Points(particleGeo, particleMat);
+scene.add(particles);
+
+// ── Root glow nodes ── (spheres at branch endpoints of shallow depth)
+const glowBranches = allBranches.filter(b => b.depth === 0 || b.depth === 1);
+glowBranches.forEach(({ start, depth }) => {
+  const geo = new THREE.SphereGeometry(0.18, 8, 8);
+  const mat = new THREE.MeshBasicMaterial({
+    color: depth === 0 ? AMBER_COLOR : TERRA_COLOR,
+    transparent: true,
+    opacity: 0.35,
+  });
+  const mesh = new THREE.Mesh(geo, mat);
+  mesh.position.copy(start);
+  scene.add(mesh);
+});
+
+// ── Animation loop ──
+let time = 0;
+let currentSlideIdx = 0;
+
+function animate() {
+  requestAnimationFrame(animate);
+  time += 0.008;
+
+  // Gentle camera drift
+  camera.position.x = Math.sin(time * 0.12) * 2;
+  camera.position.y = Math.cos(time * 0.08) * 1 + 2;
+  camera.lookAt(0, 0, 0);
+
+  // Breathe the branches
+  branchMeshes.forEach(({ line, baseOpacity, depth }, i) => {
+    const wave = Math.sin(time * 0.6 + i * 0.3) * 0.15;
+    line.material.opacity = Math.max(0.02, baseOpacity + wave * (1 - depth / 6));
+  });
+
+  // Drift particles
+  const pos = particles.geometry.attributes.position.array;
+  for (let i = 0; i < particleCount; i++) {
+    pos[i * 3]     += particleSpeeds[i].x;
+    pos[i * 3 + 1] += particleSpeeds[i].y;
+    pos[i * 3 + 2] += particleSpeeds[i].z;
+
+    // Wrap
+    if (pos[i * 3 + 1] < -30) pos[i * 3 + 1] = 30;
+    if (Math.abs(pos[i * 3]) > 45) pos[i * 3] *= -0.95;
+  }
+  particles.geometry.attributes.position.needsUpdate = true;
+
+  // Slide-dependent opacity of whole scene
+  const targetOpacity = currentSlideIdx === 0 ? 1.0 : 0.35;
+  scene.children.forEach(obj => {
+    if (obj.material && obj !== particles) {
+      obj.material.opacity = Math.max(0, obj.material.opacity * 0.97 + targetOpacity * obj.material.opacity * 0.03);
+    }
+  });
+
+  renderer.render(scene, camera);
+}
+
+animate();
+
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+// ══════════════════════════════════════════════
+//  SLIDE NAVIGATION
+// ══════════════════════════════════════════════
+
+const slideEls = document.querySelectorAll('.slide');
+const dotEls   = document.querySelectorAll('.dot');
+const counter  = document.getElementById('slide-counter');
+const total    = slideEls.length;
+let current    = 0;
+
+function goTo(n) {
+  slideEls[current].classList.remove('active');
+  dotEls[current].classList.remove('active');
+  current = (n + total) % total;
+  currentSlideIdx = current;
+  slideEls[current].classList.add('active');
+  dotEls[current].classList.add('active');
+  counter.textContent = `${current + 1} / ${total}`;
+}
+
+function next() { goTo(current + 1); }
+function prev() { goTo(current - 1); }
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') { e.preventDefault(); next(); }
+  if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')                    { e.preventDefault(); prev(); }
+});
+
+// Touch/swipe support
+let touchStartX = 0;
+document.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; });
+document.addEventListener('touchend',   e => {
+  const dx = e.changedTouches[0].clientX - touchStartX;
+  if (Math.abs(dx) > 50) dx < 0 ? next() : prev();
+});
+</script>
+</body>
+</html>
