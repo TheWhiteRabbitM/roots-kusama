@@ -67,8 +67,6 @@ roots/
 | — | Italian crypto tax (26%) | — | — | 8,407 DOT |
 | **TOTAL** | | | **3 months** | **42,000 DOT** |
 
-> Rate: $1.20 / DOT · February 2025 · ~$50,400 USD total
-
 ---
 
 ## Technical Architecture
