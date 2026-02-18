@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ROOTS</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Cinzel:wght@400;600&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --soil: #1C1008; --terra: #9B4A1F; --amber: #C9812A;
+  --wheat: #E8C97A; --parchment: #F4EDD8; --stone: #8B7355;
+}
+html, body {
+  width: 100%; height: 100%;
+  background: var(--soil);
+  font-family: 'Cormorant Garamond', serif;
+  color: var(--parchment);
+  overflow: hidden;
+}
+
+/* grain */
+body::before {
+  content: ''; position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.09'/%3E%3C/svg%3E");
+  opacity: 0.32;
+}
+
+/* decorative ring */
+.ring {
+  position: fixed; border-radius: 50%;
+  border: 1px solid rgba(201,129,42,0.06);
+  top: 50%; left: 50%; transform: translate(-50%,-50%);
+  pointer-events: none; z-index: 0;
+}
+
+/* main layout: full viewport, vertical centering */
+.wrap {
+  position: relative; z-index: 1;
+  width: 100%; height: 100%;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-rows: 1fr;
+  align-items: center;
+  padding: clamp(28px,5vw,60px) clamp(24px,6vw,72px);
+  gap: clamp(20px,4vw,56px);
+}
+
+/* ── LEFT COLUMN ── */
+.left { display: flex; flex-direction: column; gap: clamp(10px,1.8vh,18px); }
+
+.eyebrow {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(6px,1.2vw,9px);
+  letter-spacing: clamp(2px,0.5vw,4px);
+  color: var(--amber); text-transform: uppercase;
+  opacity: 0; animation: fadeUp .6s .1s forwards;
+}
+
+.title-block { opacity: 0; animation: fadeUp .6s .25s forwards; }
+.from-line, .to-line {
+  font-family: 'IM Fell English', serif; font-style: italic;
+  font-size: clamp(11px,2vw,16px); color: var(--stone); line-height: 1.2;
+}
+.main-title {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(56px,9vw,100px);
+  font-weight: 600; color: var(--wheat);
+  line-height: .88; letter-spacing: -2px;
+}
+
+.tagline {
+  font-size: clamp(12px,1.6vw,15px); font-weight: 300;
+  color: rgba(244,237,216,0.65); line-height: 1.72;
+  max-width: 420px;
+  opacity: 0; animation: fadeUp .6s .4s forwards;
+}
+.tagline em { color: var(--amber); font-style: italic; }
+
+/* meta: compact inline grid */
+.meta {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: clamp(5px,0.8vh,10px) clamp(16px,2.5vw,36px);
+  max-width: 400px;
+  opacity: 0; animation: fadeUp .6s .55s forwards;
+}
+@media (max-width: 420px) { .meta { grid-template-columns: 1fr; } }
+.meta-item { display: flex; flex-direction: column; }
+.mk {
+  font-family: 'Cinzel', serif; font-size: clamp(6px,0.9vw,8px);
+  letter-spacing: 2px; color: var(--amber); text-transform: uppercase;
+}
+.mv { font-size: clamp(10px,1.4vw,12px); color: rgba(244,237,216,0.68); }
+.mv strong { color: var(--parchment); font-weight: 600; }
+
+/* CTA */
+.cta {
+  display: inline-flex; align-items: center; gap: 10px;
+  font-family: 'Cinzel', serif; font-size: clamp(7px,1.1vw,9px);
+  letter-spacing: 3px; text-transform: uppercase;
+  color: var(--wheat); text-decoration: none;
+  border: 1px solid rgba(201,129,42,0.42);
+  padding: clamp(9px,1.4vw,13px) clamp(18px,3vw,32px);
+  transition: all .3s; position: relative; overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
+  opacity: 0; animation: fadeUp .6s .7s forwards;
+  width: fit-content;
+}
+.cta::before {
+  content: ''; position: absolute; inset: 0;
+  background: rgba(201,129,42,0.08);
+  transform: translateX(-100%); transition: transform .35s;
+}
+.cta:hover::before, .cta:active::before { transform: translateX(0); }
+.cta:hover { border-color: var(--amber); }
+.arrow { font-size: 15px; transition: transform .3s; }
+.cta:hover .arrow { transform: translateX(4px); }
+
+/* ── RIGHT COLUMN: token ring ── */
+.right {
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; animation: fadeIn 1s .3s forwards;
+}
+@media (max-width: 540px) { .right { display: none; } }
+
+.ring-el {
+  width: clamp(120px,14vw,200px); height: clamp(120px,14vw,200px);
+  border-radius: 50%;
+  border: 1.5px solid rgba(201,129,42,0.42);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  position: relative; flex-shrink: 0;
+  animation: pulse 4s ease-in-out infinite;
+}
+.ring-el::before {
+  content: ''; position: absolute; inset: 8px;
+  border-radius: 50%; border: 1px solid rgba(201,129,42,0.15);
+}
+.rname { font-family: 'Cinzel', serif; font-size: clamp(20px,3vw,36px); font-weight: 700; color: var(--wheat); letter-spacing: 2px; }
+.rsub  { font-family: 'Cinzel', serif; font-size: clamp(6px,0.9vw,8px); letter-spacing: 3px; color: var(--amber); margin-top: 2px; }
+.rdisc { font-family: 'IM Fell English', serif; font-style: italic; font-size: clamp(6px,0.9vw,9px); color: rgba(201,129,42,0.45); margin-top: 6px; text-align: center; max-width: 95px; line-height: 1.4; }
+
+/* ── BOTTOM BAR ── */
+.bottom-bar {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  padding: clamp(8px,1.2vh,12px) clamp(24px,6vw,72px);
+  display: flex; align-items: center; justify-content: space-between;
+  border-top: 1px solid rgba(201,129,42,0.1);
+  z-index: 10;
+  opacity: 0; animation: fadeIn .8s .85s forwards;
+}
+.bquote {
+  font-family: 'IM Fell English', serif; font-style: italic;
+  font-size: clamp(9px,1.2vw,11px); color: rgba(201,129,42,0.45);
+}
+.bnet {
+  font-family: 'Cinzel', serif; font-size: clamp(6px,0.9vw,8px);
+  letter-spacing: 2px; color: rgba(201,129,42,0.35); text-transform: uppercase;
+}
+@media (max-width: 500px) { .bquote { display: none; } }
+
+/* on mobile: single column layout */
+@media (max-width: 540px) {
+  .wrap {
+    grid-template-columns: 1fr;
+    padding: clamp(28px,6vh,44px) clamp(20px,5vw,36px) clamp(50px,8vh,64px);
+    overflow-y: auto;
+    height: auto; min-height: 100%;
+  }
+  html, body { overflow: auto; height: auto; min-height: 100%; }
+}
+
+@keyframes fadeUp  { from{opacity:0;transform:translateY(12px);} to{opacity:1;transform:translateY(0);} }
+@keyframes fadeIn  { from{opacity:0;} to{opacity:1;} }
+@keyframes pulse   { 0%,100%{opacity:1;} 50%{opacity:.72;} }
+</style>
+</head>
+<body>
+
+<div class="ring" style="width:min(600px,90vw);height:min(600px,90vw);"></div>
+<div class="ring" style="width:min(900px,140vw);height:min(900px,140vw);"></div>
+
+<div class="wrap">
+  <div class="left">
+
+    <div class="eyebrow">Art &amp; Social Experiments · Kusama · 2026</div>
+
+    <div class="title-block">
+      <div class="from-line">From Proof of Family</div>
+      <div class="main-title">ROOTS</div>
+      <div class="to-line">to Proof of Personhood</div>
+    </div>
+
+    <p class="tagline">
+      A Southern Italian village has verified human identity for four centuries
+      through oral tradition, family nicknames, and the memory of its elders.
+      <em>We are putting it on-chain. And letting it grow.</em>
+    </p>
+
+    <div class="meta">
+      <div class="meta-item">
+        <span class="mk">Network</span>
+        <span class="mv"><strong>Kusama</strong></span>
+      </div>
+      <div class="meta-item">
+        <span class="mk">Budget</span>
+        <span class="mv"><strong>$ 82,090 USD</strong> gross · paid in DOT</span>
+      </div>
+      <div class="meta-item">
+        <span class="mk">Payment</span>
+        <span class="mv">€ 50,000</span>
+      </div>
+      <div class="meta-item">
+        <span class="mk">Tax</span>
+        <span class="mv">in DOT at agreed rate</span>
+      </div>
+      <div class="meta-item">
+        <span class="mk">Duration</span>
+        <span class="mv">3 months · 5 phases</span>
+      </div>
+      <div class="meta-item">
+        <span class="mk">Token</span>
+        <span class="mv"><strong>ROOTS</strong> · non-transferable</span>
+      </div>
+    </div>
+
+    <a class="cta" href="presentation/index.html">
+      View Presentation <span class="arrow">→</span>
+    </a>
+
+  </div>
+
+  <div class="right">
+    <div class="ring-el">
+      <span class="rname">ROOTS</span>
+      <span class="rsub">KSM Art & Social Experiments Initiative · 2026</span>
+      <span class="rdisc">non-transferable<br>no monetary value</span>
+    </div>
+  </div>
+</div>
+
+<div class="bottom-bar">
+  <span class="bquote">"You cannot transfer your roots."</span>
+  <span class="bnet">KSM KSM Art &amp; Social Experiments Initiative · Kusama · 2026</span>
+</div>
+
+</body>
+</html>
