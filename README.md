@@ -64,10 +64,10 @@ roots/
 | 4 | The Social Experiment | Hybrid | 4 weeks | 6,923 DOT |
 | 5 | Report & Replication Framework | Off-chain | 2 weeks | 3,333 DOT |
 | | Contingency buffer | | | 1,923 DOT |
-| | Italian income tax IRPEF (33%) | | | 18,944 DOT |
+| | Italian Crypto income tax (33%) | | | 18,944 DOT |
 | **TOTAL** | | | **3 months** | **57,405 DOT** |
 
-> February 2026 · 57,405 DOT gross (net operational  DOT / IRPEF 33% 18,944 DOT)
+> February 2026 · 57,405 DOT gross (net operational  DOT / Tax 33% 18,944 DOT)
 
 ---
 
@@ -149,7 +149,7 @@ When a new child token is minted with this token as `roots_parent_token`, the NF
 
 **ROOTS Reputation points have zero monetary value.** They exist solely to weight participation in the local governance experiment. They cannot be transferred, delegated, or monetized.
 
-This project operates under Italian law as a registered cultural association (APS). All crypto receipts are subject to Italian income tax IRPEF (33%) at the time of conversion to fiat.
+This project operates under Italian law as a registered cultural association (APS). All crypto receipts are subject to Italian crypto income tax (33%) at the time of conversion to fiat.
 
 ---
 
@@ -177,7 +177,7 @@ Each replication generates a new subnet of the ROOTS graph, linked to the origin
 
 > Full breakdown in `docs/proof_of_family_MVP.docx`
 
-The 57,405 DOT budget includes Italian crypto income tax IRPEF (33%) as an explicit line item. This is not absorbed into operational costs it is reported transparently. All expenses will be documented with invoices and receipts. A financial report will accompany the Phase 5 deliverables.
+The 57,405 DOT budget includes Italian crypto income tax (33%) as an explicit line item. This is not absorbed into operational costs it is reported transparently. All expenses will be documented with invoices and receipts. A financial report will accompany the Phase 5 deliverables.
 
 If operational costs come in below projection, surplus funds will be allocated to Phase 6: replication in a second Southern Italian village.
 
