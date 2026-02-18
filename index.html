@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ROOTS — From Proof of Family to Proof of Personhood</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Cinzel:wght@400;600&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --soil: #1C1008;
+  --terra: #9B4A1F;
+  --amber: #C9812A;
+  --wheat: #E8C97A;
+  --parchment: #F4EDD8;
+  --stone: #8B7355;
+}
+
+html, body {
+  width: 100%;
+  min-height: 100%;
+  background: var(--soil);
+  font-family: 'Cormorant Garamond', serif;
+  color: var(--parchment);
+  overflow-x: hidden;
+}
+
+/* grain overlay */
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.09'/%3E%3C/svg%3E");
+  opacity: 0.35;
+}
+
+/* decorative rings */
+.ring {
+  position: fixed;
+  border-radius: 50%;
+  border: 1px solid rgba(201,129,42,0.06);
+  top: 50%; left: 50%;
+  transform: translate(-50%,-50%);
+  pointer-events: none; z-index: 0;
+}
+
+/* ── WRAP ── */
+.wrap {
+  position: relative; z-index: 1;
+  min-height: 100svh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: clamp(40px, 8vw, 80px) clamp(22px, 6vw, 72px);
+  text-align: center;
+  gap: 0;
+}
+
+/* ── TAG ── */
+.top-tag {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(7px, 1.6vw, 10px);
+  letter-spacing: clamp(2px, 0.5vw, 4px);
+  color: var(--amber);
+  text-transform: uppercase;
+  border: 1px solid rgba(201,129,42,0.28);
+  padding: 5px 14px;
+  margin-bottom: clamp(32px, 5vw, 56px);
+  opacity: 0; animation: fadeUp .7s .15s forwards;
+}
+
+/* ── TITLE ── */
+.from-line {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  font-size: clamp(13px, 2.8vw, 20px);
+  color: var(--stone);
+  margin-bottom: 3px;
+  opacity: 0; animation: fadeUp .7s .35s forwards;
+}
+.main-title {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(72px, 17vw, 148px);
+  font-weight: 600; color: var(--wheat);
+  line-height: .88; letter-spacing: -3px;
+  margin-bottom: 3px;
+  opacity: 0; animation: fadeUp .65s .45s forwards;
+}
+.to-line {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  font-size: clamp(13px, 2.8vw, 20px);
+  color: var(--stone);
+  margin-bottom: clamp(28px, 4vw, 44px);
+  opacity: 0; animation: fadeUp .7s .58s forwards;
+}
+
+/* ── OLIVE TREE SVG ── */
+.tree-wrap {
+  width: clamp(120px, 32vw, 220px);
+  margin: 0 auto clamp(22px, 4vw, 38px);
+  opacity: 0; animation: fadeIn 1.2s .65s forwards;
+}
+.tree-wrap svg { width: 100%; height: auto; display: block; }
+
+/* ── TAGLINE ── */
+.tagline {
+  font-size: clamp(14px, 3vw, 19px);
+  font-weight: 300;
+  color: rgba(244,237,216,0.7);
+  line-height: 1.8;
+  max-width: min(520px, 90vw);
+  margin: 0 auto clamp(28px, 4.5vw, 48px);
+  opacity: 0; animation: fadeUp .7s .82s forwards;
+}
+.tagline em { color: var(--amber); font-style: italic; }
+
+/* ── META GRID ── */
+.meta-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: clamp(8px, 1.5vw, 14px) clamp(20px, 4vw, 48px);
+  max-width: min(460px, 90vw);
+  width: 100%;
+  margin: 0 auto clamp(32px, 5vw, 52px);
+  opacity: 0; animation: fadeUp .7s .98s forwards;
+}
+@media (max-width: 360px) { .meta-grid { grid-template-columns: 1fr; } }
+.meta-item { text-align: left; }
+.meta-key {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(6px, 1.3vw, 8px);
+  letter-spacing: 2px; color: var(--amber);
+  text-transform: uppercase;
+  display: block; margin-bottom: 2px;
+}
+.meta-val {
+  font-size: clamp(11px, 2vw, 13px);
+  color: rgba(244,237,216,0.68);
+}
+.meta-val strong { color: var(--parchment); font-weight: 600; }
+
+/* ── CTA ── */
+.cta {
+  display: inline-flex;
+  align-items: center; gap: 11px;
+  font-family: 'Cinzel', serif;
+  font-size: clamp(8px, 1.6vw, 10px);
+  letter-spacing: clamp(2px, 0.4vw, 3px);
+  text-transform: uppercase;
+  color: var(--wheat);
+  background: none;
+  border: 1px solid rgba(201,129,42,0.45);
+  padding: clamp(12px, 2vw, 16px) clamp(24px, 4.5vw, 40px);
+  cursor: pointer; text-decoration: none;
+  transition: all .3s;
+  position: relative; overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
+  opacity: 0; animation: fadeUp .7s 1.12s forwards;
+}
+.cta::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: rgba(201,129,42,0.09);
+  transform: translateX(-100%);
+  transition: transform .4s;
+}
+.cta:hover::before, .cta:active::before { transform: translateX(0); }
+.cta:hover { border-color: var(--amber); }
+.cta-arrow { font-size: 16px; transition: transform .3s; }
+.cta:hover .cta-arrow { transform: translateX(4px); }
+
+/* ── BOTTOM ── */
+.bottom-tag {
+  margin-top: clamp(30px, 5vw, 52px);
+  font-family: 'Cinzel', serif;
+  font-size: clamp(6px, 1.3vw, 8px);
+  letter-spacing: 3px;
+  color: rgba(201,129,42,0.3);
+  text-transform: uppercase;
+  opacity: 0; animation: fadeIn 1s 1.38s forwards;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+</style>
+</head>
+<body>
+
+<div class="ring" style="width:min(560px,88vw);height:min(560px,88vw);"></div>
+<div class="ring" style="width:min(800px,125vw);height:min(800px,125vw);"></div>
+
+<div class="wrap">
+
+  <div class="top-tag">MVP Proposal · Art &amp; Social Experiments · Kusama · 2025</div>
+
+  <div class="from-line">From Proof of Family</div>
+  <h1 class="main-title">ROOTS</h1>
+  <div class="to-line">to Proof of Personhood</div>
+
+  <!-- Olive tree -->
+  <div class="tree-wrap">
+    <svg viewBox="0 0 260 320" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#C9812A" stop-opacity=".18"/>
+          <stop offset="100%" stop-color="#1C1008" stop-opacity="0"/>
+        </radialGradient>
+      </defs>
+      <ellipse cx="130" cy="165" rx="98" ry="128" fill="url(#glow)"/>
+      <!-- roots -->
+      <path d="M130 212 L130 302" stroke="#C9812A" stroke-width="2.4" stroke-linecap="round" opacity=".78"/>
+      <path d="M130 228 Q100 243 70 267 Q55 278 38 294" stroke="#C9812A" stroke-width="1.7" stroke-linecap="round" opacity=".68"/>
+      <path d="M130 238 Q158 252 185 274 Q200 285 216 300" stroke="#C9812A" stroke-width="1.7" stroke-linecap="round" opacity=".68"/>
+      <path d="M130 252 Q112 262 96 280 Q86 292 78 304" stroke="#9B4A1F" stroke-width="1.1" stroke-linecap="round" opacity=".5"/>
+      <path d="M130 257 Q148 267 162 285 Q170 295 176 308" stroke="#9B4A1F" stroke-width="1.1" stroke-linecap="round" opacity=".5"/>
+      <path d="M74 270 Q63 282 56 296" stroke="#6B4A2A" stroke-width=".7" stroke-linecap="round" opacity=".3"/>
+      <path d="M186 275 Q196 287 200 301" stroke="#6B4A2A" stroke-width=".7" stroke-linecap="round" opacity=".3"/>
+      <!-- ground -->
+      <path d="M20 212 Q130 204 240 212" stroke="#6B4A2A" stroke-width=".7" opacity=".2" stroke-dasharray="4 3"/>
+      <!-- trunk -->
+      <path d="M130 212 Q127 186 128 161 Q129 141 130 119" stroke="#8B6340" stroke-width="7" stroke-linecap="round" opacity=".94"/>
+      <!-- branches -->
+      <path d="M130 166 Q112 151 92 137 Q78 128 62 119" stroke="#8B6340" stroke-width="4.5" stroke-linecap="round"/>
+      <path d="M92 137 Q78 127 65 119 Q56 113 46 107" stroke="#7A5535" stroke-width="2.5" stroke-linecap="round"/>
+      <path d="M130 156 Q148 143 167 131 Q180 123 194 115" stroke="#8B6340" stroke-width="4.5" stroke-linecap="round"/>
+      <path d="M167 131 Q180 121 193 113 Q202 107 212 101" stroke="#7A5535" stroke-width="2.5" stroke-linecap="round"/>
+      <path d="M130 141 Q120 123 114 105 Q108 91 104 75" stroke="#7A5535" stroke-width="3.5" stroke-linecap="round"/>
+      <path d="M130 149 Q142 129 150 109 Q156 93 162 75" stroke="#7A5535" stroke-width="3" stroke-linecap="round"/>
+      <!-- leaves left -->
+      <ellipse cx="56" cy="113" rx="16" ry="6" fill="#6B7C5A" opacity=".84" transform="rotate(-28 56 113)"/>
+      <ellipse cx="43" cy="103" rx="14" ry="5.5" fill="#5A6B4A" opacity=".78" transform="rotate(-18 43 103)"/>
+      <ellipse cx="68" cy="105" rx="12" ry="5" fill="#7A8B6A" opacity=".72" transform="rotate(-40 68 105)"/>
+      <!-- leaves right -->
+      <ellipse cx="200" cy="109" rx="16" ry="6" fill="#6B7C5A" opacity=".84" transform="rotate(28 200 109)"/>
+      <ellipse cx="212" cy="99" rx="14" ry="5.5" fill="#5A6B4A" opacity=".78" transform="rotate(18 212 99)"/>
+      <ellipse cx="188" cy="101" rx="12" ry="5" fill="#7A8B6A" opacity=".72" transform="rotate(40 188 101)"/>
+      <!-- leaves top -->
+      <ellipse cx="100" cy="71" rx="14" ry="5.5" fill="#6B7C5A" opacity=".8" transform="rotate(-15 100 71)"/>
+      <ellipse cx="130" cy="59" rx="13" ry="5" fill="#7A8B6A" opacity=".76" transform="rotate(5 130 59)"/>
+      <ellipse cx="158" cy="69" rx="14" ry="5.5" fill="#5A6B4A" opacity=".8" transform="rotate(18 158 69)"/>
+      <ellipse cx="116" cy="53" rx="11" ry="4.5" fill="#6B7C5A" opacity=".65" transform="rotate(-8 116 53)"/>
+      <ellipse cx="145" cy="49" rx="11" ry="4.5" fill="#5A6B4A" opacity=".65" transform="rotate(12 145 49)"/>
+      <!-- fruits -->
+      <circle cx="54" cy="109" r="3" fill="#4A5C3A" opacity=".52"/>
+      <circle cx="200" cy="105" r="3" fill="#4A5C3A" opacity=".52"/>
+      <circle cx="128" cy="56" r="2.5" fill="#3A4C2A" opacity=".42"/>
+      <!-- medallion -->
+      <circle cx="130" cy="210" r="14" fill="none" stroke="#C9812A" stroke-width="1.2" opacity=".68"/>
+      <circle cx="130" cy="210" r="8" fill="none" stroke="#C9812A" stroke-width=".6" opacity=".38"/>
+      <circle cx="130" cy="210" r="3" fill="#C9812A" opacity=".62"/>
+    </svg>
+  </div>
+
+  <p class="tagline">
+    A Southern Italian village has verified human identity for four centuries —
+    through oral tradition, family nicknames, and the memory of its elders.<br><br>
+    <em>We are putting it on-chain. And letting it grow.</em>
+  </p>
+
+  <div class="meta-grid">
+    <div class="meta-item">
+      <span class="meta-key">Network</span>
+      <span class="meta-val"><strong>Kusama</strong></span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-key">Budget</span>
+      <span class="meta-val"><strong>62,189 DOT</strong> · € 74,627</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-key">Net ops</span>
+      <span class="meta-val">€ 50,000</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-key">Tax</span>
+      <span class="meta-val">IRPEF 33% inclusa</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-key">Duration</span>
+      <span class="meta-val">3 months · 5 phases</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-key">Token</span>
+      <span class="meta-val"><strong>ROOTS</strong> · non-transferable</span>
+    </div>
+  </div>
+
+  <a class="cta" href="presentation/index.html">
+    View Presentation <span class="cta-arrow">→</span>
+  </a>
+
+  <div class="bottom-tag">Art &amp; Social Experiments Bounty · Kusama · 2025</div>
+
+</div>
+</body>
+</html>
