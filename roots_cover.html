@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ROOTS</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Cinzel:wght@400;600&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--soil:#1C1008;--terra:#9B4A1F;--amber:#C9812A;--wheat:#E8C97A;--parch:#F4EDD8;--stone:#8B7355}
+html,body{width:100%;height:100%;background:var(--soil);font-family:'Cormorant Garamond',serif;color:var(--parch);overflow:hidden}
+#cv{position:fixed;inset:0;z-index:0;display:block;width:100%;height:100%}
+body::before{content:'';position:fixed;inset:0;z-index:1;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.07'/%3E%3C/svg%3E");opacity:.3}
+.wrap{position:relative;z-index:2;width:100%;height:100%;display:grid;grid-template-columns:1fr 1fr;align-items:center;padding:clamp(32px,6vw,80px) clamp(28px,7vw,90px);gap:clamp(16px,4vw,60px)}
+@media(max-width:680px){.wrap{grid-template-columns:1fr;padding-bottom:clamp(80px,12vh,120px)}}
+.left{display:flex;flex-direction:column;gap:clamp(11px,1.8vh,20px)}
+.eyebrow{font-family:'Cinzel',serif;font-size:clamp(7px,1.1vw,10px);letter-spacing:clamp(3px,.6vw,5px);color:var(--amber);text-transform:uppercase;opacity:0;animation:fadeUp .7s .1s forwards}
+.title-block{opacity:0;animation:fadeUp .7s .3s forwards}
+.from-line,.to-line{font-family:'IM Fell English',serif;font-style:italic;font-size:clamp(13px,2.1vw,18px);color:var(--stone);line-height:1.3}
+.main-title{font-family:'Cinzel',serif;font-size:clamp(64px,10vw,116px);font-weight:600;color:var(--wheat);line-height:.86;letter-spacing:-2px;text-shadow:0 2px 40px rgba(201,129,42,.18)}
+.tagline{font-size:clamp(13px,1.7vw,16px);font-weight:300;color:rgba(244,237,216,.7);line-height:1.78;max-width:440px;opacity:0;animation:fadeUp .7s .5s forwards}
+.tagline em{color:var(--amber);font-style:italic}
+.meta{display:grid;grid-template-columns:repeat(2,1fr);gap:clamp(6px,.9vh,11px) clamp(18px,3vw,40px);max-width:440px;opacity:0;animation:fadeUp .7s .65s forwards}
+@media(max-width:420px){.meta{grid-template-columns:1fr}}
+.mk{font-family:'Cinzel',serif;font-size:clamp(7px,1vw,9px);letter-spacing:2.5px;color:var(--amber);text-transform:uppercase}
+.mv{font-size:clamp(11px,1.4vw,13px);color:rgba(244,237,216,.7)}
+.mv strong{color:var(--parch);font-weight:600}
+.cta{display:inline-flex;align-items:center;gap:11px;font-family:'Cinzel',serif;font-size:clamp(8px,1.1vw,10px);letter-spacing:3px;text-transform:uppercase;color:var(--wheat);text-decoration:none;border:1px solid rgba(201,129,42,.38);padding:clamp(10px,1.5vw,14px) clamp(20px,3vw,34px);transition:all .3s;position:relative;overflow:hidden;width:fit-content;opacity:0;animation:fadeUp .7s .8s forwards}
+.cta::before{content:'';position:absolute;inset:0;background:rgba(201,129,42,.09);transform:translateX(-100%);transition:transform .35s}
+.cta:hover::before,.cta:active::before{transform:translateX(0)}
+.cta:hover{border-color:var(--amber)}
+.arrow{font-size:15px;transition:transform .3s}
+.cta:hover .arrow{transform:translateX(5px)}
+.right{display:flex;align-items:center;justify-content:center;position:relative;min-height:300px;opacity:0;animation:fadeIn 1.4s .4s forwards;pointer-events:none}
+@media(max-width:680px){.right{display:none}}
+.tree-ring{position:absolute;width:clamp(180px,22vw,310px);height:clamp(180px,22vw,310px);border-radius:50%;border:1px solid rgba(201,129,42,.08);box-shadow:0 0 80px rgba(201,129,42,.05);animation:pulse 5s ease-in-out infinite}
+.tree-ring::before{content:'';position:absolute;inset:18px;border-radius:50%;border:1px solid rgba(201,129,42,.05)}
+.hint{position:absolute;bottom:clamp(-28px,-3vw,-18px);left:50%;transform:translateX(-50%);font-family:'Cinzel',serif;font-size:7px;letter-spacing:2.5px;color:rgba(201,129,42,.28);text-transform:uppercase;white-space:nowrap;animation:fadeIn 3s 2.5s both;pointer-events:none}
+.bottom-bar{position:fixed;bottom:0;left:0;right:0;padding:clamp(9px,1.4vh,13px) clamp(28px,7vw,90px);display:flex;align-items:center;justify-content:space-between;border-top:1px solid rgba(201,129,42,.08);z-index:10;opacity:0;animation:fadeIn .9s .95s forwards}
+.bq{font-family:'IM Fell English',serif;font-style:italic;font-size:clamp(10px,1.3vw,12px);color:rgba(201,129,42,.4)}
+.bn{font-family:'Cinzel',serif;font-size:clamp(7px,1vw,9px);letter-spacing:2.5px;color:rgba(201,129,42,.3);text-transform:uppercase}
+@media(max-width:500px){.bq{display:none}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(13px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.6}}
+</style>
+</head>
+<body>
+<canvas id="cv"></canvas>
+
+<div class="wrap">
+  <div class="left">
+    <div class="eyebrow">KSM Art &amp; Social Experiments &ensp; 2026</div>
+    <div class="title-block">
+      <div class="from-line">From Proof of Family</div>
+      <div class="main-title">ROOTS</div>
+      <div class="to-line">to Proof of Personhood</div>
+    </div>
+    <p class="tagline">A Southern Italian village has verified human identity for four centuries through oral tradition, family nicknames, and community memory.<br><br><em>We are putting it on-chain. And letting it grow.</em></p>
+    <div class="meta">
+      <div><span class="mk">Network</span><span class="mv"><strong>Kusama</strong></span></div>
+      <div><span class="mk">Budget</span><span class="mv"><strong>62,239 DOT</strong> gross</span></div>
+      <div><span class="mk">Duration</span><span class="mv">14 wks &ensp; 3.5 months</span></div>
+      <div><span class="mk">Tax</span><span class="mv">IRPEF 33% included</span></div>
+      <div><span class="mk">Assets</span><span class="mv">NFT + Token</span></div>
+      <div><span class="mk">Gate</span><span class="mv">OpenSquare</span></div>
+    </div>
+    <a class="cta" href="presentation.html">View Presentation <span class="arrow">&#8594;</span></a>
+  </div>
+  <div class="right">
+    <div class="tree-ring"></div>
+    <span class="hint">touch to grow the roots</span>
+  </div>
+</div>
+
+<div class="bottom-bar">
+  <span class="bq">"You cannot transfer your roots."</span>
+  <span class="bn">KSM Art &amp; Social Experiments &ensp; Kusama &ensp; 2026</span>
+</div>
+
+<script>
+(function(){
+  var canvas=document.getElementById('cv');
+  var renderer=new THREE.WebGLRenderer({canvas:canvas,antialias:true,alpha:true});
+  renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+  var W=window.innerWidth,H=window.innerHeight;
+  renderer.setSize(W,H);
+  renderer.setClearColor(0x000000,0);
+  var scene=new THREE.Scene();
+  var camera=new THREE.OrthographicCamera(-W/2,W/2,H/2,-H/2,0.1,1000);
+  camera.position.set(0,0,100);
+  camera.lookAt(0,0,0);
+
+  var CA=new THREE.Color(0xC9812A),CT=new THREE.Color(0x9B4A1F),CS=new THREE.Color(0x6B3A15);
+
+  // ── STATIC TREE (center of screen) ──────────────────────────────────
+  var treeGroup=new THREE.Group();
+  scene.add(treeGroup);
+  var branchLines=[];
+
+  function rng1(s){var v=s>>>0;return function(){v=(Math.imul(1664525,v)+1013904223)>>>0;return v/4294967295}}
+  var rA=rng1(42);
+
+  function addBranch(x,y,angle,len,depth,maxD){
+    if(depth>maxD||len<3)return;
+    var ex=x+Math.cos(angle)*len;
+    var ey=y+Math.sin(angle)*len;
+    // organic mid-point
+    var mx=(x+ex)/2+(rA()-.5)*len*.45;
+    var my=(y+ey)/2+(rA()-.5)*len*.28;
+    var pts=[new THREE.Vector3(x,y,0),new THREE.Vector3(mx,my,0),new THREE.Vector3(ex,ey,0)];
+    var curve=new THREE.CatmullRomCurve3(pts);
+    var allPts=curve.getPoints(18);
+    var geo=new THREE.BufferGeometry().setFromPoints(allPts);
+    var t=depth/maxD;
+    var op=Math.max(.08,.75-t*.55);
+    var col=new THREE.Color().lerpColors(CA,CS,t*.85);
+    var mat=new THREE.LineBasicMaterial({color:col,transparent:true,opacity:op});
+    var line=new THREE.Line(geo,mat);
+    treeGroup.add(line);
+    branchLines.push({line:line,baseOpacity:op,depth:depth,t:1});
+    // branch further down
+    var nKids=depth<2?3:depth<4?2:1;
+    for(var i=0;i<nKids;i++){
+      var spread=0.52+depth*0.08;
+      var bias=(i-(nKids-1)/2)*0.28;
+      var childAngle=angle+(rA()-.5)*spread+bias;
+      // keep going downward
+      childAngle=childAngle*0.7+(-Math.PI/2)*0.3;
+      addBranch(ex,ey,childAngle,len*(.5+rA()*.25),depth+1,maxD);
+    }
+  }
+
+  function buildTree(){
+    treeGroup.children.forEach(function(c){
+      if(c.geometry)c.geometry.dispose();
+      if(c.material)c.material.dispose();
+    });
+    while(treeGroup.children.length)treeGroup.remove(treeGroup.children[0]);
+    branchLines=[];
+    // 5 main roots growing downward from base
+    var baseY=-H*0.04;
+    var origins=[
+      {x:-W*.22,a:-Math.PI/2+.6},
+      {x:-W*.10,a:-Math.PI/2+.25},
+      {x:0,a:-Math.PI/2},
+      {x: W*.10,a:-Math.PI/2-.25},
+      {x: W*.22,a:-Math.PI/2-.6}
+    ];
+    origins.forEach(function(o){
+      addBranch(o.x,baseY,o.a,H*.22,0,7);
+    });
+  }
+
+  buildTree();
+  treeGroup.position.x=0;
+
+  // ── INTERACTIVE ROOTS ──────────────────────────────────────────────
+  var rootsGroup=new THREE.Group();
+  scene.add(rootsGroup);
+  var activeRoots=[];
+  var rB=rng1(99);
+
+  function Root(wx,wy){
+    this.segs=[];this.x=wx;this.y=wy;
+    // start angle spread around downward
+    this.angle=-Math.PI/2+(rB()-.5)*Math.PI*.65;
+    this.segLen=18+rB()*28;
+    this.life=0;this.maxLife=3.5+rB()*3;
+    this.growing=true;this.numSegs=0;this.maxSegs=6+Math.floor(rB()*7);
+    this._push();
+  }
+  Root.prototype._push=function(){
+    // random jitter but strong gravity toward -PI/2 (downward)
+    this.angle+=(rB()-0.5)*0.50;
+    var grav=-Math.PI/2;
+    this.angle+=(grav-this.angle)*0.30;
+    var ex=this.x+Math.cos(this.angle)*this.segLen;
+    var ey=this.y+Math.sin(this.angle)*this.segLen*0.62;
+    var mx=(this.x+ex)/2+(rB()-.5)*this.segLen*.5;
+    var my=(this.y+ey)/2+(rB()-.5)*this.segLen*.32;
+    var pts=[new THREE.Vector3(this.x,this.y,0),new THREE.Vector3(mx,my,0),new THREE.Vector3(ex,ey,0)];
+    var curve=new THREE.CatmullRomCurve3(pts);
+    var allPts=curve.getPoints(20);
+    var geo=new THREE.BufferGeometry().setFromPoints(allPts);
+    var d=this.numSegs;
+    var op=Math.max(.07,.62-d*.07);
+    var col=new THREE.Color().lerpColors(CT,CS,d*.14);
+    var mat=new THREE.LineBasicMaterial({color:col,transparent:true,opacity:0});
+    var line=new THREE.Line(geo,mat);
+    rootsGroup.add(line);
+    this.segs.push({line:line,mat:mat,opBase:op,t:0,allPts:allPts});
+    this.x=ex;this.y=ey;
+    this.segLen*=.76+rB()*.16;this.numSegs++;
+  };
+  Root.prototype.update=function(dt){
+    this.life+=dt;
+    var fade=this.life>this.maxLife?Math.max(0,1-(this.life-this.maxLife)/1.5):1;
+    var seg=this.segs[this.segs.length-1];
+    if(seg.t<1){
+      seg.t=Math.min(1,seg.t+dt*2.4);
+      var n=Math.max(2,Math.round(seg.t*seg.allPts.length));
+      seg.line.geometry.setFromPoints(seg.allPts.slice(0,n));
+      seg.mat.opacity=seg.opBase*fade;
+    } else if(this.growing&&this.numSegs<this.maxSegs){
+      this._push();
+    } else {this.growing=false}
+    for(var i=0;i<this.segs.length;i++)this.segs[i].mat.opacity=this.segs[i].opBase*fade;
+    return fade>0.005;
+  };
+  Root.prototype.dispose=function(){
+    for(var i=0;i<this.segs.length;i++){
+      this.segs[i].line.geometry.dispose();this.segs[i].mat.dispose();
+      rootsGroup.remove(this.segs[i].line);
+    }
+  };
+
+  var lastSpawn=0,autoTimer=0;
+  function trySpawn(cx,cy){
+    var now=performance.now();
+    if(now-lastSpawn<80)return;lastSpawn=now;
+    // cx,cy are screen pixels; convert to world
+    var wx=cx-W/2;
+    // spawn near tree base (center of screen), pulled toward cursor x
+    var bx=0;
+    var by=-H*0.04;
+    var sx=bx+(wx-bx)*0.35+(rB()-.5)*65;
+    var sy=by+(rB()-.5)*20;
+    activeRoots.push(new Root(sx,sy));
+    if(activeRoots.length>70){activeRoots.splice(0,6).forEach(function(r){r.dispose()})}
+  }
+  document.addEventListener('mousemove',function(e){trySpawn(e.clientX,e.clientY)});
+  document.addEventListener('touchmove',function(e){var t=e.touches[0];trySpawn(t.clientX,t.clientY)},{passive:true});
+
+  // ── PARTICLES ─────────────────────────────────────────────────────
+  var PC=80;
+  var pGeo=new THREE.BufferGeometry();
+  var pArr=new Float32Array(PC*3);
+  var pV=[];
+  var rC=rng1(77);
+  for(var k=0;k<PC;k++){
+    pArr[k*3]=(rC()-.5)*W*.9;
+    pArr[k*3+1]=(rC()-.5)*H*.9;
+    pArr[k*3+2]=0;
+    pV.push({x:(rC()-.5)*18,y:-(rC()*16+4)});
+  }
+  pGeo.setAttribute('position',new THREE.BufferAttribute(pArr,3));
+  var pMesh=new THREE.Points(pGeo,new THREE.PointsMaterial({color:CA,size:1.2,transparent:true,opacity:.07,sizeAttenuation:false}));
+  scene.add(pMesh);
+
+  // ── ANIMATE ───────────────────────────────────────────────────────
+  var prev2=performance.now(),tick2=0;
+  function animate(){
+    requestAnimationFrame(animate);
+    var now=performance.now();var dt=Math.min((now-prev2)/1000,0.05);prev2=now;tick2+=dt;
+    autoTimer+=dt;
+    if(autoTimer>1.2+rB()*.9){
+      autoTimer=0;
+      // spawn near center base
+      trySpawn(W/2+(rB()-.5)*100,H*.54+(rB()-.5)*30);
+    }
+    for(var i=0;i<branchLines.length;i++){
+      var b=branchLines[i];
+      var wave=Math.sin(tick2*.5+i*.35+b.depth*.8)*.04*(1-b.t);
+      b.line.material.opacity=Math.max(0,b.baseOpacity+wave);
+    }
+    for(var j=activeRoots.length-1;j>=0;j--){
+      if(!activeRoots[j].update(dt)){activeRoots[j].dispose();activeRoots.splice(j,1)}
+    }
+    var pa2=pGeo.attributes.position.array;
+    for(var m=0;m<PC;m++){
+      pa2[m*3]+=pV[m].x*dt;pa2[m*3+1]+=pV[m].y*dt;
+      if(pa2[m*3+1]<-H/2-20){pa2[m*3+1]=H/2+10;pa2[m*3]=(rC()-.5)*W*.9}
+      if(Math.abs(pa2[m*3])>W/2+20)pa2[m*3]*=-.95;
+    }
+    pGeo.attributes.position.needsUpdate=true;
+    pMesh.material.opacity=.05+Math.sin(tick2*.35)*.04;
+    renderer.render(scene,camera);
+  }
+  animate();
+
+  window.addEventListener('resize',function(){
+    W=window.innerWidth;H=window.innerHeight;
+    camera.left=-W/2;camera.right=W/2;camera.top=H/2;camera.bottom=-H/2;
+    camera.updateProjectionMatrix();
+    renderer.setSize(W,H);
+    buildTree();
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>ROOTS — Presentation</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Cinzel:wght@400;600;700&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--soil:#1C1008;--terra:#9B4A1F;--amber:#C9812A;--wheat:#E8C97A;--parch:#F4EDD8;--stone:#8B7355}
+html,body{width:100%;height:100%;overflow:hidden;background:#120C05;font-family:'Cormorant Garamond',serif;color:var(--parch);-webkit-text-size-adjust:100%}
+#bg{position:fixed;inset:0;z-index:0;pointer-events:none}
+body::after{content:'';position:fixed;inset:0;z-index:1;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.08'/%3E%3C/svg%3E");
+  opacity:0.35}
+#slides{position:relative;z-index:10;width:100%;height:100%}
+.slide{position:absolute;inset:0;display:flex;align-items:flex-start;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity .6s ease;
+  overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;
+  padding:clamp(76px,11vh,118px) clamp(36px,7vw,96px) clamp(96px,14vh,136px)}
+.slide.active{opacity:1;pointer-events:all}
+.slide-inner{width:100%;max-width:960px}
+.slide.active .slide-inner{animation:fadeUp .5s .05s both}
+
+/* Typography */
+.eyebrow{font-family:'Cinzel',serif;font-size:clamp(12px,1.5vw,14px);letter-spacing:3px;color:var(--amber);margin-bottom:12px;text-transform:uppercase}
+.sh{font-family:'Cinzel',serif;font-size:clamp(28px,4vw,46px);font-weight:600;color:var(--wheat);line-height:1.2;margin-bottom:clamp(18px,2.8vh,30px);text-shadow:0 2px 20px rgba(0,0,0,.3)}
+.sh em{font-style:italic;font-family:'IM Fell English',serif;color:var(--amber)}
+.body{font-size:clamp(17px,2vw,20px);font-weight:400;color:rgba(244,237,216,.92);line-height:1.78}
+.body em{color:var(--amber);font-style:italic;font-weight:500}
+.box{background:rgba(201,129,42,.10);border:1px solid rgba(201,129,42,.30);padding:clamp(15px,2.2vw,24px) clamp(18px,2.8vw,28px);font-family:'IM Fell English',serif;font-style:italic;font-size:clamp(16px,1.9vw,19px);color:rgba(244,237,216,.95);line-height:1.72;border-radius:4px}
+.note{background:rgba(255,255,255,.04);border-left:3px solid rgba(201,129,42,.38);padding:clamp(12px,1.7vw,17px) clamp(15px,2.2vw,22px);font-size:clamp(15px,1.6vw,17px);color:rgba(244,237,216,.78);line-height:1.65;border-radius:0 4px 4px 0}
+.note strong{color:var(--wheat)}
+.mono{font-family:'Courier New',monospace;font-size:.9em;color:var(--amber);background:rgba(201,129,42,.12);padding:2px 6px;border-radius:3px}
+
+/* Grid */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:clamp(14px,3vw,40px);align-items:start}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(9px,1.6vw,18px)}
+.g4{display:grid;grid-template-columns:repeat(2,1fr);gap:clamp(10px,1.8vw,18px)}
+@media(max-width:620px){.g2,.g3,.g4{grid-template-columns:1fr}}
+
+/* Cards */
+.card{background:rgba(255,255,255,.05);border:1px solid rgba(201,129,42,.20);padding:clamp(14px,2vw,22px);position:relative;border-radius:4px}
+.card::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:linear-gradient(180deg,var(--amber),var(--terra));border-radius:3px 0 0 3px}
+.cl{font-family:'Cinzel',serif;font-size:clamp(10px,1.1vw,12px);letter-spacing:2.5px;color:var(--amber);text-transform:uppercase;margin-bottom:7px;font-weight:600}
+.ct{font-family:'Cinzel',serif;font-size:clamp(15px,1.8vw,18px);color:var(--wheat);margin-bottom:7px;font-weight:500}
+.cb{font-size:clamp(14px,1.6vw,16px);color:rgba(244,237,216,.84);line-height:1.65}
+
+/* Rows */
+.row{display:flex;align-items:flex-start;gap:clamp(11px,1.8vw,17px);padding:clamp(10px,1.6vh,15px) 0;border-bottom:1px solid rgba(255,255,255,.07)}
+.row:last-child{border-bottom:none}
+.rnum{font-family:'Cinzel',serif;font-size:clamp(14px,1.5vw,16px);letter-spacing:1.5px;color:var(--amber);min-width:32px;padding-top:2px;flex-shrink:0;font-weight:600}
+.rdot{width:9px;height:9px;border-radius:50%;background:var(--terra);margin-top:7px;flex-shrink:0}
+.rdot.g{background:var(--amber);box-shadow:0 0 8px rgba(201,129,42,.35)}
+.rc{flex:1;min-width:0}
+.rt{font-family:'Cinzel',serif;font-size:clamp(15px,1.7vw,17px);color:var(--wheat);margin-bottom:4px;font-weight:500}
+.rd{font-size:clamp(13px,1.5vw,15px);color:rgba(244,237,216,.7);line-height:1.6}
+.ramt{font-family:'Cinzel',serif;font-size:clamp(14px,1.6vw,16px);color:var(--amber);white-space:nowrap;flex-shrink:0;padding-top:2px;font-weight:600}
+.tag{display:inline-block;background:rgba(201,129,42,.14);color:var(--amber);font-family:'Cinzel',serif;font-size:clamp(9px,1vw,11px);letter-spacing:1.5px;padding:2px 7px;margin-left:6px;vertical-align:middle;border-radius:3px;border:1px solid rgba(201,129,42,.28)}
+
+/* Stats */
+.stat{text-align:center;padding:clamp(13px,2vh,20px)}
+.sn{font-family:'Cinzel',serif;font-size:clamp(32px,5vw,52px);font-weight:700;color:var(--amber);line-height:1;display:block;text-shadow:0 0 26px rgba(201,129,42,.28)}
+.sl{font-family:'Cinzel',serif;font-size:clamp(11px,1.2vw,13px);letter-spacing:2.5px;color:rgba(244,237,216,.62);text-transform:uppercase;margin-top:7px;display:block}
+.ss{font-size:clamp(12px,1.2vw,14px);color:rgba(244,237,216,.42);margin-top:5px}
+
+/* Ornament */
+.orn{display:flex;align-items:center;gap:10px;margin:clamp(10px,1.6vh,16px) 0}
+.orn .l{flex:1;height:1px;background:rgba(201,129,42,.14)}
+.orn .d{width:4px;height:4px;background:var(--amber);transform:rotate(45deg);flex-shrink:0}
+
+/* Formula */
+.formula{background:rgba(201,129,42,.08);border:1px solid rgba(201,129,42,.22);border-radius:4px;padding:clamp(14px,1.9vh,22px) clamp(16px,2.3vw,26px);font-family:'Courier New',monospace;font-size:clamp(13px,1.5vw,15px);color:rgba(244,237,216,.88);line-height:2;overflow-x:auto;margin:clamp(10px,1.5vh,15px) 0}
+.formula .fn{color:var(--amber);font-weight:700}
+.formula .cm{color:rgba(244,237,216,.4);font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.92em}
+
+/* Budget */
+.bl{display:flex;flex-direction:column;gap:clamp(8px,1.2vh,11px)}
+.bi{display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:clamp(10px,1.6vw,17px);padding:clamp(8px,1.3vh,12px) 0;border-bottom:1px solid rgba(255,255,255,.07)}
+.bi:last-child{border-bottom:none;padding-top:clamp(11px,1.7vh,15px);border-top:2px solid rgba(201,129,42,.32)}
+.bp{font-size:clamp(15px,1.7vw,17px);color:rgba(244,237,216,.87)}
+.bb{width:clamp(48px,7vw,80px);height:5px;background:rgba(201,129,42,.12);border-radius:3px;position:relative;overflow:hidden}
+.bb::after{content:'';position:absolute;left:0;top:0;height:100%;width:var(--pct);background:linear-gradient(90deg,var(--terra),var(--amber));border-radius:3px}
+.ba{font-family:'Cinzel',serif;font-size:clamp(14px,1.5vw,16px);color:var(--wheat);font-weight:600;min-width:82px;text-align:right}
+.bi.tax .bp{color:rgba(244,237,216,.58);font-style:italic}
+.bi.tax .ba{color:rgba(244,237,216,.58)}
+.bi.tot .bp{color:var(--wheat);font-weight:700}
+.bi.tot .ba{color:var(--amber);font-weight:700;font-size:clamp(15px,1.8vw,18px)}
+
+/* Milestones */
+.mg{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(13px,2vw,22px);margin-bottom:clamp(18px,3vh,28px)}
+@media(max-width:860px){.mg{grid-template-columns:1fr}}
+.mc{background:rgba(255,255,255,.04);border:1px solid rgba(201,129,42,.18);padding:clamp(15px,2vw,23px);border-radius:6px;position:relative}
+.mc::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--terra),var(--amber));border-radius:6px 6px 0 0}
+.mn{font-family:'Cinzel',serif;font-size:clamp(19px,2.5vw,26px);font-weight:700;color:var(--amber);margin-bottom:5px}
+.mtl{font-family:'Cinzel',serif;font-size:clamp(15px,1.8vw,19px);font-weight:600;color:var(--wheat);margin-bottom:7px}
+.md{font-size:clamp(13px,1.5vw,15px);color:rgba(244,237,216,.7);line-height:1.55;margin-bottom:11px;min-height:54px}
+.mph{font-family:'Cinzel',serif;font-size:clamp(10px,1.1vw,12px);letter-spacing:2px;color:var(--amber);text-transform:uppercase;margin-bottom:9px;padding-bottom:8px;border-bottom:1px solid rgba(201,129,42,.12)}
+.mnet{font-family:'Cinzel',serif;font-size:clamp(15px,1.8vw,18px);color:var(--wheat);font-weight:600}
+.mtax{font-size:clamp(12px,1.3vw,14px);color:rgba(244,237,216,.5);margin-top:3px}
+.mgr{font-family:'Cinzel',serif;font-size:clamp(14px,1.6vw,17px);color:var(--amber);font-weight:700;margin-top:4px}
+.mtot{text-align:center;padding:clamp(13px,2vw,21px);background:rgba(201,129,42,.07);border:1px solid rgba(201,129,42,.20);border-radius:6px}
+.mtotm{font-family:'Cinzel',serif;font-size:clamp(17px,2.2vw,23px);font-weight:700;color:var(--wheat)}
+.mtotb{display:block;font-size:clamp(13px,1.4vw,15px);color:rgba(244,237,216,.52);margin-top:5px}
+
+/* Hypotheses */
+.hg{display:grid;grid-template-columns:1fr 1fr;gap:clamp(11px,1.8vw,18px)}
+@media(max-width:680px){.hg{grid-template-columns:1fr}}
+.hc{background:rgba(255,255,255,.04);border:1px solid rgba(201,129,42,.17);border-radius:6px;padding:clamp(14px,2vw,20px)}
+.hb{font-family:'Cinzel',serif;font-size:clamp(10px,1.1vw,12px);letter-spacing:2px;color:rgba(201,129,42,.7);text-transform:uppercase;margin-bottom:5px}
+.ht{font-family:'Cinzel',serif;font-size:clamp(14px,1.6vw,16px);color:var(--wheat);font-weight:600;margin-bottom:6px}
+.hd{font-size:clamp(13px,1.5vw,15px);color:rgba(244,237,216,.78);line-height:1.6;margin-bottom:8px}
+.pro{color:rgba(140,210,115,.85);font-size:clamp(12px,1.3vw,14px);margin-top:3px}
+.con{color:rgba(210,140,95,.85);font-size:clamp(12px,1.3vw,14px);margin-top:2px}
+
+/* Cover */
+.cg{display:grid;grid-template-columns:1fr auto;gap:clamp(22px,4.5vw,60px);align-items:center}
+@media(max-width:750px){.cg{grid-template-columns:1fr}.cr{display:none}}
+.ceye{font-family:'Cinzel',serif;font-size:clamp(11px,1.4vw,13px);letter-spacing:4px;color:var(--amber);text-transform:uppercase;margin-bottom:clamp(16px,2.6vh,26px);font-weight:600}
+.cfrom,.cto{font-family:'IM Fell English',serif;font-style:italic;font-size:clamp(17px,2.5vw,22px);color:var(--stone)}
+.cfrom{margin-bottom:3px}
+.cto{margin-top:3px;margin-bottom:clamp(16px,2.6vh,26px)}
+.ctitle{font-family:'Cinzel',serif;font-size:clamp(58px,10.5vw,104px);font-weight:700;color:var(--wheat);line-height:.9;letter-spacing:-1px;text-shadow:0 4px 40px rgba(0,0,0,.4)}
+.ctag{font-size:clamp(16px,2vw,19px);color:rgba(244,237,216,.82);line-height:1.72;max-width:480px;margin-bottom:clamp(20px,3.2vh,32px)}
+.ctag em{color:var(--amber);font-style:italic}
+.cmeta{display:flex;flex-direction:column;gap:clamp(8px,1.3vh,12px)}
+.crow{display:flex;align-items:baseline;gap:14px}
+.ckey{font-family:'Cinzel',serif;font-size:clamp(10px,1.2vw,12px);letter-spacing:2.5px;color:var(--amber);text-transform:uppercase;min-width:80px;flex-shrink:0;font-weight:600}
+.cval{font-size:clamp(14px,1.6vw,16px);color:rgba(244,237,216,.80)}
+.cval strong{color:var(--parch);font-weight:700}
+.cr{display:flex;align-items:center;justify-content:center}
+.ring{width:clamp(160px,18vw,260px);height:clamp(160px,18vw,260px);border-radius:50%;border:2px solid rgba(201,129,42,.48);display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;animation:pulse 4s ease-in-out infinite;box-shadow:0 0 55px rgba(201,129,42,.10)}
+.ring::before{content:'';position:absolute;inset:10px;border-radius:50%;border:1px solid rgba(201,129,42,.20)}
+.rname{font-family:'Cinzel',serif;font-size:clamp(26px,3.8vw,46px);font-weight:700;color:var(--wheat);letter-spacing:3px;text-shadow:0 0 16px rgba(201,129,42,.28)}
+.rsub{font-family:'Cinzel',serif;font-size:clamp(9px,1vw,11px);letter-spacing:3px;color:var(--amber);margin-top:5px}
+.rdisc{font-family:'IM Fell English',serif;font-style:italic;font-size:clamp(10px,1.1vw,12px);color:rgba(201,129,42,.55);margin-top:9px;text-align:center;max-width:120px;line-height:1.6}
+
+/* Closing */
+.clw{text-align:center;display:flex;flex-direction:column;align-items:center}
+.clbdg{font-family:'Cinzel',serif;font-size:clamp(12px,1.4vw,14px);letter-spacing:4px;color:var(--amber);border:1.5px solid rgba(201,129,42,.40);display:inline-block;padding:8px 18px;margin-bottom:clamp(17px,2.6vh,26px);font-weight:600}
+.cltit{font-family:'Cinzel',serif;font-size:clamp(32px,5.5vw,60px);font-weight:700;color:var(--wheat);line-height:1.15;margin-bottom:clamp(13px,2vh,20px);text-shadow:0 4px 28px rgba(0,0,0,.33)}
+.clsub{font-family:'IM Fell English',serif;font-style:italic;font-size:clamp(17px,2.2vw,22px);color:rgba(244,237,216,.70);margin-bottom:clamp(24px,3.8vh,42px);max-width:500px;line-height:1.65}
+
+/* Fixed UI */
+#bl{position:fixed;top:clamp(17px,2.6vh,25px);left:clamp(17px,2.6vw,32px);z-index:200;font-family:'Cinzel',serif;font-size:clamp(11px,1.2vw,13px);letter-spacing:2.5px;color:rgba(201,129,42,.58);text-decoration:none;text-transform:uppercase;transition:color .3s;font-weight:600}
+#bl:hover{color:var(--amber)}
+#kb{position:fixed;top:clamp(17px,2.6vh,25px);right:clamp(17px,2.6vw,32px);z-index:200;display:flex;align-items:center;gap:9px}
+@media(max-width:560px){#kb{display:none}}
+.kd{width:7px;height:7px;border-radius:50%;background:var(--amber);box-shadow:0 0 9px rgba(201,129,42,.48)}
+.kt{font-family:'Cinzel',serif;font-size:clamp(10px,1.1vw,12px);letter-spacing:2.5px;color:rgba(201,129,42,.58);text-transform:uppercase;font-weight:600}
+#nav{position:fixed;bottom:clamp(17px,2.8vh,28px);left:50%;transform:translateX(-50%);z-index:200;display:flex;align-items:center;gap:clamp(9px,1.8vw,16px)}
+.nb{background:rgba(201,129,42,.07);border:1.5px solid rgba(201,129,42,.40);color:var(--amber);font-family:'Cinzel',serif;font-size:clamp(11px,1.3vw,13px);letter-spacing:2.5px;padding:clamp(10px,1.5vw,14px) clamp(18px,2.5vw,26px);cursor:pointer;text-transform:uppercase;transition:all .22s;-webkit-tap-highlight-color:transparent;border-radius:4px;font-weight:600}
+.nb:hover,.nb:active{background:rgba(201,129,42,.18);border-color:var(--amber)}
+#ctr{font-family:'Cinzel',serif;font-size:clamp(12px,1.3vw,14px);letter-spacing:2.5px;color:rgba(201,129,42,.58);min-width:52px;text-align:center;font-weight:600}
+#dots{position:fixed;right:clamp(13px,2vw,24px);top:50%;transform:translateY(-50%);z-index:200;display:flex;flex-direction:column;gap:10px}
+@media(max-width:460px){#dots{display:none}}
+.dot{width:8px;height:8px;border-radius:50%;background:rgba(201,129,42,.20);cursor:pointer;border:1.5px solid rgba(201,129,42,.30);transition:all .26s}
+.dot.on{background:var(--amber);border-color:var(--amber);box-shadow:0 0 9px rgba(201,129,42,.52)}
+#pg{position:fixed;bottom:0;left:0;height:3px;z-index:200;background:linear-gradient(90deg,var(--terra),var(--amber));transition:width .7s cubic-bezier(.4,0,.2,1);box-shadow:0 0 7px rgba(201,129,42,.32)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(11px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.75}}
+</style>
+</head>
+<body>
+<canvas id="bg"></canvas>
+<div id="pg" style="width:0%"></div>
+<a id="bl" href="index.html">&#8592; Back</a>
+<div id="kb"><div class="kd"></div><span class="kt">Kusama &ensp; Art &amp; Social Experiments</span><div class="kd"></div></div>
+<div id="slides">
+
+<!-- 0 COVER -->
+<div class="slide active"><div class="slide-inner">
+  <div class="cg">
+    <div>
+      <div class="ceye">MVP Proposal &ensp; Art &amp; Social Experiments &ensp; 2026</div>
+      <div class="cfrom">From Proof of Family</div>
+      <div class="ctitle">ROOTS</div>
+      <div class="cto">to Proof of Personhood</div>
+      <p class="ctag">A Southern Italian village has verified human identity for four centuries through oral tradition, family nicknames, and community memory.<br><br><em>We are putting it on-chain. And letting it grow.</em></p>
+      <div class="cmeta">
+        <div class="crow"><span class="ckey">Network</span><span class="cval"><strong>Kusama</strong> &ensp; KSM Art &amp; Social Experiments</span></div>
+        <div class="crow"><span class="ckey">Duration</span><span class="cval">14 weeks &ensp; 3.5 months &ensp; 5 phases</span></div>
+        <div class="crow"><span class="ckey">Budget</span><span class="cval"><strong>62,239 DOT</strong> gross &ensp; Crypto Tax Italy 33% included</span></div>
+        <div class="crow"><span class="ckey">Assets</span><span class="cval">ROOTS NFT (identity) &ensp; ROOTS Token (governance)</span></div>
+        <div class="crow"><span class="ckey">Gate</span><span class="cval">OpenSquare &ensp; token-weighted referendum</span></div>
+      </div>
+    </div>
+    <div class="cr">
+      <div class="ring">
+        <span class="rname">ROOTS</span>
+        <span class="rsub">KSM 2026</span>
+        <span class="rdisc">non-transferable<br>no monetary value</span>
+      </div>
+    </div>
+  </div>
+</div></div>
+
+<!-- 1 PROBLEM -->
+<div class="slide"><div class="slide-inner">
+  <div class="eyebrow">01 &ensp; Problem</div>
+  <h2 class="sh">The oldest <em>anti-Sybil</em> system<br>in human history</h2>
+  <div class="g2">
+    <div>
+      <p class="body">As AI blurs the boundary between human and machine, current Proof of Personhood solutions are <em>technically sophisticated but culturally thin</em> &mdash; they verify existence without verifying belonging.</p>
+      <div class="orn"><div class="l"></div><div class="d"></div><div class="l"></div></div>
+      <p class="body">In small Southern Italian villages, every family carries a <em>'u nomme 'e casa</em> &mdash; a house name passed down orally for centuries. Invisible to registries. Incomprehensible to outsiders. Impossible for any AI to fake.</p>
+    </div>
+    <div>
+      <div class="card" style="margin-bottom:12px">
+        <div class="cl">Pre-digital identity</div>
+        <div class="cb">House names are hyper-local, orally transmitted, semantically rich, socially validated &mdash; and they <strong style="color:var(--wheat)">grow organically</strong> as families branch across generations. A proto-blockchain predating the internet by 400 years.</div>
+      </div>
+      <div class="box">"You cannot fake belonging to a place if you do not know who the people are and what they are called."</div>
+    </div>
+  </div>
+</div></div>
+
+<!-- 2 TWO ASSETS -->
+<div class="slide"><div class="slide-inner">
+  <div class="eyebrow">02 &ensp; Architecture</div>
+  <h2 class="sh">Two assets.<br><em>Two distinct functions.</em></h2>
+  <div class="g2" style="margin-bottom:clamp(14px,2.2vh,20px)">
+    <div>
+      <div class="card">
+        <div class="cl">Asset 1 &ensp; Identity</div>
+        <div class="ct">The ROOTS NFT</div>
+        <div class="cb">Non-fungible. Unique per family. Holds the entire lineage graph: <span class="mono">roots_parent_nft_id</span>, <span class="mono">branch_count</span>, <span class="mono">total_descendants</span>, <span class="mono">succession_address</span>. Generative artwork that evolves as the family grows. Rarity is structural &mdash; ancient families with many descendants hold the rarest NFTs.</div>
+      </div>
+    </div>
+    <div>
+      <div class="card">
+        <div class="cl">Asset 2 &ensp; Governance</div>
+        <div class="ct">The ROOTS Token</div>
+        <div class="cb">Fungible. Non-transferable at protocol level (<span class="mono">transfer: None</span>). <em>Dynamically allocated</em> based on NFT rarity &mdash; not 1 per family. The number of tokens held by a capostipite grows as his family grows. Token balance is the vote weight on OpenSquare.</div>
+      </div>
+    </div>
+  </div>
+  <div class="note">The NFT holds the <strong>genealogy and identity</strong>. The Token holds the <strong>governance power</strong>. Neither can be transferred or sold. Both are minted at Phase 3 and change over time as the graph grows.</div>
+</div></div>
+
+<!-- 3 TOKEN MECHANISM -->
+<div class="slide"><div class="slide-inner">
+  <div class="eyebrow">03 &ensp; Token System</div>
+  <h2 class="sh">Pi&ugrave; parenti hai nel registro,<br>pi&ugrave; <em>conti.</em></h2>
+  <div class="g2">
+    <div>
+      <p class="body" style="margin-bottom:10px">Ogni famiglia ha tanti token quanti sono i suoi parenti registrati nel sistema &mdash; contando tutti i nodi del suo sottoalbero. Non in modo proporzionale: altrimenti la famiglia pi&ugrave; grande comanderebbe da sola.</p>
+      <div class="formula">
+nodi = 1 + branch_count + total_descendants
+
+<span class="fn">token_allocation</span> = floor(sqrt(nodi) &times; 10)
+
+<span class="cm">// Solo nel grafo:    sqrt(1)  &times; 10 = 10 token</span>
+<span class="cm">// 10 parenti regist: sqrt(11) &times; 10 = 33 token</span>
+<span class="cm">// 54 parenti regist: sqrt(55) &times; 10 = 74 token</span>
+      </div>
+      <div class="note" style="margin-top:10px">La radice quadrata &egrave; un dettaglio tecnico. Alla cerimonia si dice una sola cosa: <strong>&ldquo;quanti parenti hai nel registro, tanta &egrave; la tua voce.&rdquo;</strong></div>
+    </div>
+    <div>
+      <div class="cl" style="margin-bottom:8px">Simulazione &mdash; villaggio 60 famiglie</div>
+      <div class="row"><div class="rdot g"></div><div class="rc"><div class="rt">Fondatori A (54 nodi nel grafo)</div><div class="rd"><strong style="color:var(--amber)">73 token &ensp; 8.4%</strong></div></div></div>
+      <div class="row"><div class="rdot g"></div><div class="rc"><div class="rt">Fondatori B (39 nodi)</div><div class="rd"><strong style="color:var(--wheat)">62 token &ensp; 7.2%</strong></div></div></div>
+      <div class="row"><div class="rdot g"></div><div class="rc"><div class="rt">Famiglia media (10 nodi)</div><div class="rd">31 token &ensp; 3.6%</div></div></div>
+      <div class="row"><div class="rdot g"></div><div class="rc"><div class="rt">Famiglia nuova (solo lei)</div><div class="rd"><span style="color:rgba(244,237,216,.55)">10 token &ensp; 1.2%</span></div></div></div>
+      <div class="row"><div class="rdot g"></div><div class="rc"><div class="rt">A + B + C insieme (top 3)</div><div class="rd">187 token &ensp; <em>21.6% &mdash; non basta</em></div></div></div>
+      <div class="orn" style="margin-top:7px"><div class="l"></div><div class="d"></div><div class="l"></div></div>
+      <p style="font-size:clamp(11px,1.3vw,13px);color:rgba(244,237,216,.62)">Anche le tre famiglie pi&ugrave; grandi insieme non raggiungono il 22%. Per vincere un referendum serve un consenso largo &mdash; un vero consiglio di paese.</p>
+    </div>
+  </div>
+</div></div>
+
+<!-- 4 GOVERNANCE GATE -->
+<div class="slide"><div class="slide-inner">
+  <div class="eyebrow">04 &ensp; OpenGov &ensp; Doppio Quorum</div>
+  <h2 class="sh">Per vincere servono <em>i voti</em><br>e <em>la partecipazione</em></h2>
+  <div class="g2">
+    <div>
+      <p class="body" style="margin-bottom:11px">Un referendum si considera valido solo se soddisfa <em>entrambe</em> le condizioni. Le famiglie grandi portano peso &mdash; ma non possono vincere senza portare il villaggio alle urne.</p>
+      <div class="formula">
+Platform:   OpenSquare (opensquare.network)
+Gate:       ROOTS Token balance &#x2265; 1
+
+Quorum A:   &gt;50% dei token espressi a favore
+Quorum B:   &gt;33% delle famiglie registrate
+            devono aver votato
+
+Snapshot:   fine Fase 3 (tutti i token mintati)
+      </div>
+      <div class="note" style="margin-top:10px"><strong>Effetto del doppio quorum:</strong> anche con 61 token (5.9%), un fondatore non pu&ograve; fare nulla senza convincere almeno 20 famiglie su 60 a venire alle urne. &Egrave; una soglia di legittimità popolare, non solo ponderata.</div>
+    </div>
+    <div>
+      <div class="card" style="margin-bottom:12px">
+        <div class="cl">Perch&eacute; non Kusama OpenGov nativo?</div>
+        <div class="cb">OpenGov usa KSM: chi compra KSM comanda. Serve un gate limitato ai soli membri attestati, pesato per standing genealogico &mdash; non per potere economico. OpenSquare legge balance arbitrari on-chain con regole configurabili.</div>
+      </div>
+      <div class="box">Il Quorum B &egrave; il cuore del sistema: una decisione non &egrave; legittima se due terzi del villaggio restano a casa. Il peso dei token &egrave; il <em>come</em> si vota &mdash; la partecipazione &egrave; il <em>se</em> il voto conta.</div>
+    </div>
+  </div>
+</div></div>
+
+<!-- 5 DEATH OF CAPOSTIPITE -->
+<div class="slide"><div class="slide-inner">
+  <div class="eyebrow">05 &ensp; La domanda che nessuno fa</div>
+  <h2 class="sh">Quando il capostipite muore,<br>l&rsquo;<em>NFT resta.</em> I token no.</h2>
+  <div class="g2">
+    <div>
+      <p class="body" style="margin-bottom:11px">Ogni patriarca morirà. Il wallet è inaccessibile. I token spariscono &mdash; non si ereditano. Quello che resta è l&rsquo;<em>NFT della famiglia</em>: la memoria del lignaggio, la radice da cui i figli continuano a ramificarsi.</p>
+      <p class="body" style="margin-bottom:11px">Il nuovo capostipite designato dalla comunità riceve token calcolati dal grafo che già esiste &mdash; dai parenti già registrati. <em>Più la famiglia è numerosa, più voce avrà già naturalmente.</em></p>
+      <div class="box">Alla cerimonia ogni capostipite sente tre cose:<br><br>1. I tuoi token spariscono con te &mdash; non si ereditano.<br>2. Il tuo NFT resta: è la memoria della tua famiglia.<br>3. Ogni tuo figlio registrato riceve 1 token in tuo ricordo.</div>
+    </div>
+    <div>
+      <div class="cl" style="margin-bottom:9px">Cosa succede alla morte dei Fondatori A</div>
+      <div class="row"><div class="rdot"></div><div class="rc"><div class="rt">73 token bruciati</div><div class="rd">Il potere del capostipite scompare con lui.</div></div></div>
+      <div class="row"><div class="rdot g"></div><div class="rc"><div class="rt">NFT resta in cima al grafo</div><div class="rd">I suoi 8 rami continuano a referenziarlo come padre nel lignaggio.</div></div></div>
+      <div class="row"><div class="rdot g"></div><div class="rc"><div class="rt">+1 token a ognuno degli 8 figli</div><div class="rd">Eredità simbolica: un voto per ricordare che vengono da lui.</div></div></div>
+      <div class="row"><div class="rdot g"></div><div class="rc"><div class="rt">Il nuovo capostipite</div><div class="rd">Designato dalla comunità. Riceve i token calcolati sul grafo già esistente: se la famiglia è numerosa, ha già voce.</div></div></div>
+      <div class="orn" style="margin-top:8px"><div class="l"></div><div class="d"></div><div class="l"></div></div>
+      <div class="hc" style="margin-top:2px">
+        <div class="hb">Succession Address &ensp; &#9670; Consigliato</div>
+        <div class="ht">Designa un erede mentre sei in vita</div>
+        <div class="hd">Alla cerimonia, 2 minuti per firmare il nome del successore on-chain. Il sistema si occupa del resto.</div>
+        <div class="pro">&#43; Nessun limbo. Nessuna attesa. La volontà del patriarca è legge.</div>
+      </div>
+    </div>
+  </div>
+</div></div>
+
+<!-- 6 ROADMAP -->
+<div class="slide"><div class="slide-inner">
+  <div class="eyebrow">06 &ensp; Roadmap</div>
+  <h2 class="sh">5 phases &ensp; 14 weeks &ensp; 3.5 months</h2>
+  <div class="row"><div class="rnum">01</div><div class="rc"><div class="rt">Oral Ethnography &amp; Book of Names <span class="tag">WKS 1&ndash;4 &ensp; OFF-CHAIN</span></div><div class="rd">60+ house names collected &ensp; lineage graph mapped &ensp; 100-copy Book of Names printed and deposited with municipality &ensp; video documentation</div></div></div>
+  <div class="row"><div class="rnum">02</div><div class="rc"><div class="rt">The Attestation Ceremony <span class="tag">WKS 5&ndash;6 &ensp; BRIDGE</span></div><div class="rd">Public event with elder panel &ensp; succession protocol briefed to every capostipite &ensp; certificates issued &ensp; 20-min documentary filmed</div></div></div>
+  <div class="row"><div class="rnum">03</div><div class="rc"><div class="rt">On-Chain Registration <span class="tag">WKS 7&ndash;8 &ensp; ON-CHAIN</span></div><div class="rd">Wallet onboarding &ensp; ROOTS NFT + token minting &ensp; redistribution indexer goes live &ensp; IPFS pipeline &ensp; 100+ participants</div></div></div>
+  <div class="row"><div class="rnum">04</div><div class="rc"><div class="rt">The Social Experiment <span class="tag">WKS 9&ndash;12 &ensp; HYBRID</span></div><div class="rd">OpenSquare referendum open &ensp; facilitated deliberation &ensp; data collection &ensp; referendum closes end of wk 12</div></div></div>
+  <div class="row"><div class="rnum">05</div><div class="rc"><div class="rt">Report &amp; Replication Framework <span class="tag">WKS 13&ndash;14</span></div><div class="rd">Referendum result to municipality &ensp; 30-page report on Mirror.xyz &ensp; succession protocol documented &ensp; facilitator handbook for other villages</div></div></div>
+</div></div>
+
+<!-- 7 MILESTONES -->
+<div class="slide"><div class="slide-inner">
+  <div class="eyebrow">07 &ensp; Payment Milestones</div>
+  <h2 class="sh">3 milestones &ensp; 3 payments</h2>
+  <div class="mg">
+    <div class="mc">
+      <div class="mn">M1</div><div class="mtl">Project Start</div>
+      <div class="md">Signed agreement. On-chain identity verified. Field coordinator engaged. Phase 1 collection underway.</div>
+      <div class="mph">Phase 1 &ensp; Wks 1&ndash;4</div>
+      <div class="mnet">7,500 DOT</div><div class="mtax">+ 3,694 DOT tax</div><div class="mgr">= 11,194 DOT gross</div>
+    </div>
+    <div class="mc">
+      <div class="mn">M2</div><div class="mtl">100+ Tokens Live</div>
+      <div class="md">100+ ROOTS NFTs + tokens on-chain. Redistribution indexer live. Book of Names deposited. Ceremony documented. Referendum launched (Phase 4 start).</div>
+      <div class="mph">Phases 2&ndash;3 &ensp; Wks 5&ndash;8</div>
+      <div class="mnet">17,500 DOT</div><div class="mtax">+ 8,619 DOT tax</div><div class="mgr">= 26,119 DOT gross</div>
+    </div>
+    <div class="mc">
+      <div class="mn">M3</div><div class="mtl">Final Delivery</div>
+      <div class="md">Referendum closed. Result to municipality. Documentary. Report on Mirror.xyz. Succession protocol documented. Facilitator handbook.</div>
+      <div class="mph">Phases 4&ndash;5 &ensp; Wks 9&ndash;14</div>
+      <div class="mnet">16,700 DOT</div><div class="mtax">+ 8,226 DOT tax</div><div class="mgr">= 24,926 DOT gross</div>
+    </div>
+  </div>
+  <div class="mtot">
+    <span class="mtotm">TOTAL: 62,239 DOT</span>
+    <span class="mtotb">Net operational: 41,700 DOT &ensp; Crypto Tax Italy (33%): 20,539 DOT</span>
+  </div>
+</div></div>
+
+<!-- 8 BUDGET -->
+<div class="slide"><div class="slide-inner">
+  <div class="eyebrow">08 &ensp; Budget</div>
+  <h2 class="sh">62,239 DOT gross &ensp; Crypto Tax Italy 33% included</h2>
+  <div class="g2">
+    <div>
+      <div class="bl">
+        <div class="bi"><span class="bp">Phase 1 &ensp; Ethnography</span><span class="bb" style="--pct:18%"></span><span class="ba">11,194 DOT</span></div>
+        <div class="bi"><span class="bp">Phase 2 &ensp; Ceremony</span><span class="bb" style="--pct:24%"></span><span class="ba">14,925 DOT</span></div>
+        <div class="bi"><span class="bp">Phase 3 &ensp; On-Chain</span><span class="bb" style="--pct:18%"></span><span class="ba">11,194 DOT</span></div>
+        <div class="bi"><span class="bp">Phase 4 &ensp; Experiment</span><span class="bb" style="--pct:22%"></span><span class="ba">13,731 DOT</span></div>
+        <div class="bi"><span class="bp">Phase 5 &ensp; Report</span><span class="bb" style="--pct:10%"></span><span class="ba">6,269 DOT</span></div>
+        <div class="bi"><span class="bp">Contingency</span><span class="bb" style="--pct:8%"></span><span class="ba">4,926 DOT</span></div>
+        <div class="bi tax"><span class="bp">Crypto Tax Italy (33%)</span><span class="bb" style="--pct:33%"></span><span class="ba">20,539 DOT</span></div>
+        <div class="bi tot"><span class="bp">TOTAL</span><span class="bb" style="--pct:100%"></span><span class="ba">62,239 DOT</span></div>
+      </div>
+      <p style="font-size:clamp(9px,1vw,11px);color:rgba(244,237,216,.28);margin-top:8px;font-style:italic">Net: 41,700 DOT &ensp; Crypto Tax Italy: 20,539 DOT &ensp; Total: 62,239 DOT</p>
+    </div>
+    <div style="display:flex;flex-direction:column;justify-content:space-around">
+      <div class="stat"><span class="sn">100+</span><span class="sl">Participants attested</span></div>
+      <div class="stat"><span class="sn">3.5</span><span class="sl">Months to deliver</span></div>
+      <div class="stat"><span class="sn">&#x221E;</span><span class="sl">New nodes possible</span><span class="ss">the graph grows forever</span></div>
+    </div>
+  </div>
+</div></div>
+
+<!-- 9 ROOTS NFT -->
+<div class="slide"><div class="slide-inner">
+  <div class="eyebrow">09 &ensp; ROOTS NFT</div>
+  <h2 class="sh">A living portrait of your<br><em>place</em> in the graph</h2>
+  <div class="g2">
+    <div>
+      <p class="body" style="margin-bottom:12px">Every attested family receives a <em>generative NFT</em> unique to their position in the lineage graph. The artwork evolves: when a sub-family links to a parent, the parent NFT re-renders with a new branch.</p>
+      <div class="row"><div class="rdot g"></div><div class="rc"><div class="rt">Trunk width</div><div class="rd">Proportional to <span class="mono">total_descendants</span> &mdash; ancient families grow wider.</div></div></div>
+      <div class="row"><div class="rdot g"></div><div class="rc"><div class="rt">Branch count</div><div class="rd">Equals <span class="mono">branch_count</span>. New house name born &rarr; parent NFT gains a new branch.</div></div></div>
+      <div class="row"><div class="rdot g"></div><div class="rc"><div class="rt">Color</div><div class="rd">Terracotta (new families) &rarr; deep amber (founding lineages).</div></div></div>
+      <div class="row"><div class="rdot g"></div><div class="rc"><div class="rt">Succession field</div><div class="rd"><span class="mono">succession_address</span> stored on-chain. Status: active / dormant / succeeded.</div></div></div>
+    </div>
+    <div>
+      <div class="box" style="margin-bottom:12px">Rarity is not assigned. It <em>emerges</em> from the actual size and age of the family in the real village. The oldest family holds the rarest NFT because they genuinely are the oldest family.</div>
+      <div class="card">
+        <div class="cl">Disclaimer</div>
+        <div class="cb">ROOTS NFTs have <strong style="color:var(--wheat)">zero monetary value.</strong> They cannot be traded, sold, or transferred. Identity attestation and lineage records only.</div>
+      </div>
+    </div>
+  </div>
+</div></div>
+
+<!-- 10 WHY KUSAMA -->
+<div class="slide"><div class="slide-inner">
+  <div class="eyebrow">10 &ensp; Why Kusama</div>
+  <h2 class="sh">The most unlikely<br><em>Kusama users</em> imaginable</h2>
+  <div class="g2">
+    <div>
+      <p class="body" style="margin-bottom:12px">This experiment belongs on Kusama. The Identity Pallet, native asset minting, and OpenGov infrastructure already exist &mdash; we are not building new tooling. We are proving that Kusama's primitives work for a context their designers <em>never imagined.</em></p>
+      <div class="box">If Kusama's identity infrastructure works for elderly residents of a 500-person village in Southern Italy, it can work for anyone.</div>
+    </div>
+    <div>
+      <div class="card" style="margin-bottom:12px">
+        <div class="cl">Scalability</div>
+        <div class="cb">The replication framework enables any village with a living oral identity tradition to run this experiment. Italy, Greece, Spain, Portugal, the Balkans, North Africa.</div>
+      </div>
+      <div class="card">
+        <div class="cl">Core thesis</div>
+        <div class="cb" style="font-family:'IM Fell English',serif;font-style:italic;color:var(--wheat);font-size:clamp(12px,1.6vw,14px)">"The oldest anti-Sybil mechanism in human history is a village that knows its own names. We are putting it on-chain and letting it grow."</div>
+      </div>
+    </div>
+  </div>
+</div></div>
+
+<!-- 11 CLOSING -->
+<div class="slide"><div class="slide-inner">
+  <div class="clw">
+    <div class="clbdg">ROOTS</div>
+    <h2 class="cltit">You cannot transfer<br>your roots.</h2>
+    <p class="clsub">From Proof of Family to Proof of Personhood &mdash;<br>a rural social experiment on the Kusama network.</p>
+    <div style="margin-top:clamp(34px,5vh,52px);font-family:'Cinzel',serif;font-size:clamp(9px,1.2vw,11px);letter-spacing:3px;color:rgba(201,129,42,.42);text-transform:uppercase">Art &amp; Social Experiments &ensp; Kusama &ensp; 2026</div>
+  </div>
+</div></div>
+
+</div>
+<div id="dots"></div>
+<div id="nav">
+  <button class="nb" onclick="prev()">&#8592; Prev</button>
+  <span id="ctr">1 / 12</span>
+  <button class="nb" onclick="next()">Next &#8594;</button>
+</div>
+
+<script>
+const canvas=document.getElementById('bg');
+const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.setSize(innerWidth,innerHeight);
+renderer.setClearColor(0x000000,0);
+const scene=new THREE.Scene();
+const cam=new THREE.PerspectiveCamera(58,innerWidth/innerHeight,0.1,200);
+cam.position.set(0,0,42);
+const CA=new THREE.Color(0xC9812A),CT=new THREE.Color(0x9B4A1F);
+
+function rng(s){let v=s>>>0;return()=>{v=(Math.imul(1664525,v)+1013904223)>>>0;return v/4294967295}}
+function norm(x,y,z){const l=Math.sqrt(x*x+y*y+z*z);return[x/l,y/l,z/l]}
+
+const branches=[];
+function tree(){
+  const r=rng(1337);
+  const ori=[
+    {x:-18,y:12,z:2,dx:-.25,dy:-.95,dz:.08},
+    {x:-8,y:14,z:1,dx:-.12,dy:-.98,dz:.05},
+    {x:2,y:15,z:0,dx:.05,dy:-1,dz:.02},
+    {x:12,y:13,z:-.5,dx:.18,dy:-.96,dz:.04},
+    {x:20,y:11,z:-1.5,dx:.28,dy:-.94,dz:-.06}
+  ];
+  function br(sx,sy,sz,dx,dy,dz,len,d){
+    if(d>8||len<.15)return;
+    const ex=sx+dx*len,ey=sy+dy*len,ez=sz+dz*len;
+    const pts=[new THREE.Vector3(sx,sy,sz)];
+    for(let i=1;i<3;i++){
+      const t=i/3;
+      pts.push(new THREE.Vector3(
+        sx+(ex-sx)*t+(r()-.5)*len*(.3+t*.4),
+        sy+(ey-sy)*t+(r()-.5)*len*(.2+t*.3),
+        sz+(ez-sz)*t+(r()-.5)*len*.25
+      ));
+    }
+    pts.push(new THREE.Vector3(ex,ey,ez));
+    const ra=d<=1?0:d<=2?1:d<=3?3:d<=4?5:d<=5?7:d<=6?8:d<=7?9:10;
+    const t=d/8;
+    branches.push({pts,d,ra,op:Math.max(.06,.72-t*.55),col:new THREE.Color().lerpColors(CA,CT,t*.8),cur:0,tgt:0,ln:null});
+    const nk=d<2?3:d<6?2:1;
+    for(let i=0;i<nk;i++){
+      const ab=(i-(nk-1)/2)*.3;
+      const [nx,ny,nz]=norm(dx+(r()-.5)*(.55+d*.12)+ab,dy+(r()-.5)*.22-.15,dz+(r()-.5)*.5);
+      br(ex,ey,ez,nx,ny,nz,len*(.45+r()*.3),d+1);
+    }
+  }
+  ori.forEach(o=>{const[nx,ny,nz]=norm(o.dx,o.dy,o.dz);br(o.x,o.y,o.z,nx,ny,nz,8,0)});
+}
+tree();
+branches.forEach(b=>{
+  const cv=new THREE.CatmullRomCurve3(b.pts,false,'catmullrom',.5);
+  const geo=new THREE.BufferGeometry().setFromPoints(cv.getPoints(24));
+  const mat=new THREE.LineBasicMaterial({color:b.col,transparent:true,opacity:0});
+  b.ln=new THREE.Line(geo,mat);scene.add(b.ln);
+});
+
+const PC=90,pg=new THREE.BufferGeometry(),pa=new Float32Array(PC*3),ps=[],r2=rng(2024);
+for(let i=0;i<PC;i++){pa[i*3]=(r2()-.5)*86;pa[i*3+1]=(r2()-.5)*64;pa[i*3+2]=(r2()-.5)*22;ps.push({x:(r2()-.5)*.006,y:(r2()-.5)*.005-.002,z:(r2()-.5)*.003})}
+pg.setAttribute('position',new THREE.BufferAttribute(pa,3));
+const pm=new THREE.Points(pg,new THREE.PointsMaterial({color:CA,size:.11,transparent:true,opacity:.14,sizeAttenuation:true}));
+scene.add(pm);
+
+function setT(idx){branches.forEach(b=>{b.tgt=b.ra<=idx?b.op:b.ra===idx+1?.015:0})}
+
+let tick=0;
+(function loop(){
+  requestAnimationFrame(loop);tick+=.007;
+  cam.position.x=Math.sin(tick*.10)*2.8;cam.position.y=Math.cos(tick*.07)*1.2+1.6;cam.lookAt(0,0,0);
+  branches.forEach((b,i)=>{
+    const w=b.tgt>0?Math.sin(tick*.55+i*.28)*.07*(1-b.d/7):0;
+    b.cur+=(b.tgt+w-b.cur)*.038;b.ln.material.opacity=Math.max(0,b.cur);
+  });
+  const a=pm.geometry.attributes.position.array;
+  for(let i=0;i<PC;i++){a[i*3]+=ps[i].x;a[i*3+1]+=ps[i].y;a[i*3+2]+=ps[i].z;
+    if(a[i*3+1]<-34)a[i*3+1]=32;if(Math.abs(a[i*3])>46)a[i*3]*=-.93}
+  pm.geometry.attributes.position.needsUpdate=true;
+  renderer.render(scene,cam);
+})();
+
+window.addEventListener('resize',()=>{cam.aspect=innerWidth/innerHeight;cam.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});
+
+const ses=document.querySelectorAll('.slide'),tot=ses.length;
+const de=document.getElementById('dots'),ct=document.getElementById('ctr'),pg2=document.getElementById('pg');
+let cur=0;
+for(let i=0;i<tot;i++){const d=document.createElement('div');d.className='dot'+(i===0?' on':'');d.addEventListener('click',()=>go(i));de.appendChild(d)}
+const ds=de.querySelectorAll('.dot');
+function go(n){
+  ses[cur].classList.remove('active');ds[cur].classList.remove('on');
+  cur=(n+tot)%tot;
+  ses[cur].classList.add('active');ds[cur].classList.add('on');
+  ct.textContent=`${cur+1} / ${tot}`;ses[cur].scrollTop=0;
+  setT(cur);pg2.style.width=`${(cur/(tot-1))*100}%`;
+}
+function next(){go(cur+1)}function prev(){go(cur-1)}
+setT(0);
+document.addEventListener('keydown',e=>{
+  if(['ArrowRight','ArrowDown',' '].includes(e.key)){e.preventDefault();next()}
+  if(['ArrowLeft','ArrowUp'].includes(e.key)){e.preventDefault();prev()}
+});
+let tx=0;
+document.addEventListener('touchstart',e=>{tx=e.touches[0].clientX},{passive:true});
+document.addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-tx;if(Math.abs(dx)>44)dx<0?next():prev()});
+</script>
+</body>
+</html>
